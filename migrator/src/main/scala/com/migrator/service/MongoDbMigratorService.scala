@@ -3,17 +3,21 @@ package com.migrator.service
 import com.migrator.utils.MongoDbConnection
 import zio.{Task, ZLayer}
 
-class MongoDbMigratorService(mongoDbConnection: MongoDbConnection){
+trait MongoDbMigratorService{
+  def performMongoDbMigration(): Task[Unit]
+}
 
-  def performMongoDbMigration(): Task[Unit] =
+class MongoDbMigratorServiceImpl(mongoDbConnection: MongoDbConnection) extends MongoDbMigratorService{
+
+  override def performMongoDbMigration(): Task[Unit] =
     for{
       mongoDbClient <- mongoDbConnection.getMongoClient()
     } yield ()
 }
 
 object MongoDbMigratorService{
-  private def create(mongoDbConnection: MongoDbConnection) =
-    new MongoDbMigratorService(mongoDbConnection)
+  private def create(mongoDbConnection: MongoDbConnection): MongoDbMigratorService =
+    new MongoDbMigratorServiceImpl(mongoDbConnection)
 
   lazy val live: ZLayer[MongoDbConnection, Any, MongoDbMigratorService] =
     ZLayer.fromFunction(create _)

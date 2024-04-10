@@ -10,11 +10,15 @@ import zio.sql.postgresql.PostgresJdbcModule
 import java.time.LocalDate
 import java.util.UUID
 
-class CustomerRepository extends PostgresJdbcModule{
+trait CustomerRepository{
+  def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
+}
+
+class CustomerRepositoryImpl extends CustomerRepository with PostgresJdbcModule{
 
   import Entity._
 
-  def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
+  override def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
     val customer = customerDto.map(item => Customer(item.id, item.age, item.dob, item.firstName, item.lastName))
     val statement = insertInto(customers)(id, age, dob, firstName, lastName).values(customer)
 
@@ -39,7 +43,7 @@ class CustomerRepository extends PostgresJdbcModule{
 }
 
 object CustomerRepository{
-  private def create() = new CustomerRepository
+  private def create(): CustomerRepository = new CustomerRepositoryImpl
 
   lazy val live: ZLayer[Any, Throwable, CustomerRepository] =
     ZLayer.succeed(create)
