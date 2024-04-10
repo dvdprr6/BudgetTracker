@@ -2,9 +2,9 @@ package com.migrator
 
 import com.migrator.dto.CustomerDto
 import com.migrator.models.MigratorOptions
-import com.migrator.repository.CustomerRepository
-import com.migrator.service.{MongoDbMigratorService, PostgresMigratorService}
-import com.migrator.utils.MongoDbConnection
+import com.migrator.repository.CustomerRepositoryImpl
+import com.migrator.service.{MongoDbMigratorService, MongoDbMigratorServiceImpl, PostgresMigratorService, PostgresMigratorServiceImpl}
+import com.migrator.utils.MongoDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
@@ -52,10 +52,10 @@ object Main extends ZIOCliDefault {
     } yield()
 
     program.provide(
-      MongoDbConnection.live,
-      MongoDbMigratorService.live,
-      PostgresMigratorService.live,
-      CustomerRepository.live
+      MongoDbConnectionImpl.live,
+      MongoDbMigratorServiceImpl.live,
+      PostgresMigratorServiceImpl.live,
+      CustomerRepositoryImpl.live
     )
   }
 

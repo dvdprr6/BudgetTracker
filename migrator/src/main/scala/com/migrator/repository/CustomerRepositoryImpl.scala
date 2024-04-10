@@ -42,7 +42,7 @@ class CustomerRepositoryImpl extends CustomerRepository with PostgresJdbcModule{
 
 }
 
-object CustomerRepository{
+object CustomerRepositoryImpl{
   private def create(): CustomerRepository = new CustomerRepositoryImpl
 
   lazy val live: ZLayer[Any, Throwable, CustomerRepository] =

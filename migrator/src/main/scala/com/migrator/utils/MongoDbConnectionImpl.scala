@@ -14,7 +14,7 @@ class MongoDbConnectionImpl extends MongoDbConnection {
     ZIO.succeed(MongoClients.create(""))
 }
 
-object MongoDbConnection{
+object MongoDbConnectionImpl{
   private def create(): MongoDbConnection = new MongoDbConnectionImpl
 
   lazy val live: ZLayer[Any, Nothing, MongoDbConnection] =

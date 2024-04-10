@@ -15,10 +15,10 @@ class MongoDbMigratorServiceImpl(mongoDbConnection: MongoDbConnection) extends M
     } yield ()
 }
 
-object MongoDbMigratorService{
+object MongoDbMigratorServiceImpl{
   private def create(mongoDbConnection: MongoDbConnection): MongoDbMigratorService =
     new MongoDbMigratorServiceImpl(mongoDbConnection)
 
-  lazy val live: ZLayer[MongoDbConnection, Any, MongoDbMigratorService] =
+  lazy val live: ZLayer[MongoDbConnection, Throwable, MongoDbMigratorService] =
     ZLayer.fromFunction(create _)
 }

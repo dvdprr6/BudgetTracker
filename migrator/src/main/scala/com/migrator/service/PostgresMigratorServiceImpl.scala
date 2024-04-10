@@ -17,7 +17,7 @@ class PostgresMigratorServiceImpl(customerRepository: CustomerRepository) extend
   }
 }
 
-object PostgresMigratorService{
+object PostgresMigratorServiceImpl{
   private def create(customerRepository: CustomerRepository): PostgresMigratorService =
     new PostgresMigratorServiceImpl(customerRepository)
 
