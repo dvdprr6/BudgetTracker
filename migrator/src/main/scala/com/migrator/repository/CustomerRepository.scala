@@ -14,12 +14,16 @@ class CustomerRepository extends PostgresJdbcModule{
 
   import Entity._
 
-  def insertCustomers(customerDto: Seq[CustomerDto]): ZIO[Any, Exception, Int] = {
+  def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
     val customer = customerDto.map(item => Customer(item.id, item.age, item.dob, item.firstName, item.lastName))
     val statement = insertInto(customers)(id, age, dob, firstName, lastName).values(customer)
 
 
-    execute(statement).provide(PostgresConnection.live, ConnectionPool.live, SqlDriver.live)
+    execute(statement).provide(
+      PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
+      ConnectionPool.live,
+      SqlDriver.live
+    )
   }
 
   private object Entity{
@@ -37,6 +41,6 @@ class CustomerRepository extends PostgresJdbcModule{
 object CustomerRepository{
   private def create() = new CustomerRepository
 
-  lazy val live: ZLayer[Any, Nothing, CustomerRepository] =
+  lazy val live: ZLayer[Any, Throwable, CustomerRepository] =
     ZLayer.succeed(create)
 }
