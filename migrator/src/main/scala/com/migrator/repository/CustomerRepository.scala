@@ -1,7 +1,7 @@
-package com.budgettracker.repository
+package com.migrator.repository
 
-import com.budgettracker.dto.CustomerDto
-import com.budgettracker.utils.PostgresConnection
+import com.migrator.dto.CustomerDto
+import com.migrator.utils.PostgresConnection
 import zio._
 import zio.schema.DeriveSchema
 import zio.sql.ConnectionPool

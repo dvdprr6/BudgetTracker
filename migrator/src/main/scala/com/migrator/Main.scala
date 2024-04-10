@@ -1,8 +1,8 @@
-package com.budgettracker
+package com.migrator
 
-import com.budgettracker.dto.CustomerDto
-import com.budgettracker.repository.CustomerRepository
-import com.budgettracker.service.PostgresMigratorService
+import com.migrator.dto.CustomerDto
+import com.migrator.repository.CustomerRepository
+import com.migrator.service.PostgresMigratorService
 import zio._
 
 import java.time.LocalDate

@@ -1,4 +1,4 @@
-package com.budgettracker.utils
+package com.migrator.utils
 
 import zio.ZLayer
 import zio.sql.ConnectionPoolConfig

@@ -1,4 +1,4 @@
-package com.budgettracker.dto
+package com.migrator.dto
 
 import java.time.LocalDate
 import java.util.UUID

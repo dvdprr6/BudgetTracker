@@ -1,7 +1,7 @@
-package com.budgettracker.service
+package com.migrator.service
 
-import com.budgettracker.dto.CustomerDto
-import com.budgettracker.repository.CustomerRepository
+import com.migrator.dto.CustomerDto
+import com.migrator.repository.CustomerRepository
 import zio._
 
 class PostgresMigratorService(customerRepository: CustomerRepository) {
