@@ -3,7 +3,8 @@ package com.migrator
 import com.migrator.dto.CustomerDto
 import com.migrator.models.MigratorOptions
 import com.migrator.repository.CustomerRepositoryImpl
-import com.migrator.service.{MongoDbMigratorService, MongoDbMigratorServiceImpl, PostgresMigratorService, PostgresMigratorServiceImpl}
+import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, PostgresMigratorService, PostgresMigratorServiceImpl}
+import com.migrator.utils.Constants._
 import com.migrator.utils.MongoDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
@@ -15,10 +16,10 @@ import java.util.UUID
 object Main extends ZIOCliDefault {
 
   override def cliApp: CliApp[Any with ZIOAppArgs with Scope, Any, Any] = {
-    val postgresUrl: Options[String] = Options.text("postgres-url")
-    val postgresUsername: Options[String] = Options.text("postgres-username")
-    val postgresPassword: Options[String] = Options.text("postgres-password")
-    val mongoDbUrl: Options[String] = Options.text("mongodb-url")
+    val postgresUrl: Options[String] = Options.text(OPTIONS_POSTGRES_URL)
+    val postgresUsername: Options[String] = Options.text(OPTIONS_POSTGRES_USERNAME)
+    val postgresPassword: Options[String] = Options.text(OPTIONS_POSTGRES_PASSWORD)
+    val mongoDbUrl: Options[String] = Options.text(OPTIONS_MONGODB_URL)
 
     val options = (postgresUrl ++ postgresUsername ++ postgresPassword ++ mongoDbUrl).as(MigratorOptions.apply _)
     val migratorCommand: Command[MigratorOptions] = Command("migrator", options)
@@ -47,15 +48,15 @@ object Main extends ZIOCliDefault {
     )
 
     val program = for {
-      mongoDbMigratorService <- ZIO.service[MongoDbMigratorService]
+      mongoDbCashFlowService <- ZIO.service[MongoDbCashFlowService]
       postgresMigratorService <- ZIO.service[PostgresMigratorService]
-      _ <- mongoDbMigratorService.performMongoDbMigration(mongoDbUrl)
+      _ <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
       _ <- postgresMigratorService.performPostgresMigration(customerDto)(postgresUrl, postgresUsername, postgresPassword)
     } yield()
 
     program.provide(
       MongoDbConnectionImpl.live,
-      MongoDbMigratorServiceImpl.live,
+      MongoDbCashFlowServiceImpl.live,
       PostgresMigratorServiceImpl.live,
       CustomerRepositoryImpl.live
     )

@@ -8,9 +8,6 @@ import zio.schema.DeriveSchema
 import zio.sql.ConnectionPool
 import zio.sql.postgresql.PostgresJdbcModule
 
-import java.time.LocalDate
-import java.util.UUID
-
 trait CustomerRepository{
   def insertCustomers(customerDto: Seq[CustomerDto])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
 }

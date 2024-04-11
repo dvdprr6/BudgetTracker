@@ -13,7 +13,9 @@ trait MongoDbConnection{
 class MongoDbConnectionImpl extends MongoDbConnection {
 
   override def getMongoClient(mongoDbUrl: String): ZIO[Any, Exception, MongoClient] = ZIO.succeed{
-    val codecRegistries = CodecRegistries.fromCodecs(new CashFlowCodec())
+    val cashFlowCodec = new CashFlowCodec
+
+    val codecRegistries = CodecRegistries.fromCodecs(cashFlowCodec)
     val settings: MongoClientSettings = MongoClientSettings.builder()
       .applyConnectionString(new ConnectionString(mongoDbUrl))
       .codecRegistry(codecRegistries)
