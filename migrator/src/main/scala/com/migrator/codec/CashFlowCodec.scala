@@ -15,15 +15,13 @@ class CashFlowCodec extends Codec[CashFlow]{
     var cashFlow = CashFlow(new ObjectId(), 0.00, 0.00, new Date, new Date)
 
     while (bsonReader.readBsonType() != BsonType.END_OF_DOCUMENT){
-      val fieldName = bsonReader.readName()
-
-      cashFlow = fieldName match {
+      cashFlow = bsonReader.readName() match {
         case "_id" => cashFlow.copy(objectId = bsonReader.readObjectId())
         case "amount" => cashFlow.copy(amount = bsonReader.readDouble())
         case "create_date" => cashFlow.copy(createDate = new Date(bsonReader.readDateTime()))
         case "delta" => cashFlow.copy(delta = bsonReader.readDouble())
         case "modified_date" => cashFlow.copy(modifiedDate = new Date(bsonReader.readDateTime()))
-        case _ => throw new Exception("Cash Flow field not found")
+        case x => throw new Exception(s"Cash Flow field $x not found")
       }
 
     }
