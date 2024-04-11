@@ -34,6 +34,7 @@ object Main extends ZIOCliDefault {
     val postgresUrl = migratorOptions.postgresUrl
     val postgresUsername = migratorOptions.postgresUsername
     val postgresPassword = migratorOptions.postgresPassword
+    val mongoDbUrl = migratorOptions.mongoDbUrl
 
     val customerDto = Seq(
       CustomerDto(
@@ -48,7 +49,8 @@ object Main extends ZIOCliDefault {
     val program = for {
       mongoDbMigratorService <- ZIO.service[MongoDbMigratorService]
       postgresMigratorService <- ZIO.service[PostgresMigratorService]
-      _ <- postgresMigratorService.performPostgresMigration(customerDto, postgresUrl, postgresUsername, postgresPassword)
+      _ <- mongoDbMigratorService.performMongoDbMigration(mongoDbUrl)
+      _ <- postgresMigratorService.performPostgresMigration(customerDto)(postgresUrl, postgresUsername, postgresPassword)
     } yield()
 
     program.provide(

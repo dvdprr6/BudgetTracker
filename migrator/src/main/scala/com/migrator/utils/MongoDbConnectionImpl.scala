@@ -1,17 +1,26 @@
 package com.migrator.utils
 
+import com.migrator.codec.CashFlowCodec
+import com.mongodb.{ConnectionString, MongoClientSettings}
 import zio.{ZIO, ZLayer}
 import com.mongodb.client.{MongoClient, MongoClients}
+import org.bson.codecs.configuration.CodecRegistries
 
 trait MongoDbConnection{
-  def getMongoClient(): ZIO[Any, Exception, MongoClient]
+  def getMongoClient(mongoDbUrl: String): ZIO[Any, Exception, MongoClient]
 }
 
 class MongoDbConnectionImpl extends MongoDbConnection {
-  private val URL = "";
 
-  override def getMongoClient(): ZIO[Any, Exception, MongoClient] =
-    ZIO.succeed(MongoClients.create(""))
+  override def getMongoClient(mongoDbUrl: String): ZIO[Any, Exception, MongoClient] = ZIO.succeed{
+    val codecRegistries = CodecRegistries.fromCodecs(new CashFlowCodec())
+    val settings: MongoClientSettings = MongoClientSettings.builder()
+      .applyConnectionString(new ConnectionString(mongoDbUrl))
+      .codecRegistry(codecRegistries)
+      .build()
+
+    MongoClients.create(settings)
+  }
 }
 
 object MongoDbConnectionImpl{

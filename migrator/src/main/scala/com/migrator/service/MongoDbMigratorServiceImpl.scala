@@ -1,18 +1,26 @@
 package com.migrator.service
 
+import com.migrator.models.CashFlow
+import com.migrator.repository.{CashFlowRepository, CashFlowRepositoryImpl}
 import com.migrator.utils.MongoDbConnection
-import zio.{Task, ZLayer}
+import zio._
 
 trait MongoDbMigratorService{
-  def performMongoDbMigration(): Task[Unit]
+  def performMongoDbMigration(mongoDbUrl: String): Task[Seq[CashFlow]]
 }
 
 class MongoDbMigratorServiceImpl(mongoDbConnection: MongoDbConnection) extends MongoDbMigratorService{
 
-  override def performMongoDbMigration(): Task[Unit] =
-    for{
-      mongoDbClient <- mongoDbConnection.getMongoClient()
-    } yield ()
+  override def performMongoDbMigration(mongoDbUrl: String): Task[Seq[CashFlow]] = {
+    val program = for{
+      cashFlowRepository <- ZIO.service[CashFlowRepository]
+      mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
+      cashFlow <- cashFlowRepository.getCashFlowRecords(mongoDbClient)
+      _ = mongoDbClient.close()
+    } yield cashFlow
+
+    program.provide(CashFlowRepositoryImpl.live)
+  }
 }
 
 object MongoDbMigratorServiceImpl{

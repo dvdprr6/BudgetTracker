@@ -1,6 +1,7 @@
 package com.migrator.repository
 
 import com.migrator.dto.CustomerDto
+import com.migrator.models.Customer
 import com.migrator.utils.PostgresConnection
 import zio._
 import zio.schema.DeriveSchema
@@ -11,14 +12,14 @@ import java.time.LocalDate
 import java.util.UUID
 
 trait CustomerRepository{
-  def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
+  def insertCustomers(customerDto: Seq[CustomerDto])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
 }
 
 class CustomerRepositoryImpl extends CustomerRepository with PostgresJdbcModule{
 
   import Entity._
 
-  override def insertCustomers(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
+  override def insertCustomers(customerDto: Seq[CustomerDto])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
     val customer = customerDto.map(item => Customer(item.id, item.age, item.dob, item.firstName, item.lastName))
     val statement = insertInto(customers)(id, age, dob, firstName, lastName).values(customer)
 
@@ -31,7 +32,6 @@ class CustomerRepositoryImpl extends CustomerRepository with PostgresJdbcModule{
   }
 
   private object Entity{
-    case class Customer(id: UUID, age: Int, dob: LocalDate, firstName: String, lastName: String)
 
     implicit val customerSchema = DeriveSchema.gen[Customer]
 

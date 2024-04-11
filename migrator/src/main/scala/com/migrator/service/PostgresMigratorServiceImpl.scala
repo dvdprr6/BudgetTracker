@@ -5,14 +5,14 @@ import com.migrator.repository.CustomerRepository
 import zio._
 
 trait PostgresMigratorService{
-  def performPostgresMigration(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def performPostgresMigration(customerDto: Seq[CustomerDto])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
 class PostgresMigratorServiceImpl(customerRepository: CustomerRepository) extends PostgresMigratorService{
 
-  override def performPostgresMigration(customerDto: Seq[CustomerDto], postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = {
+  override def performPostgresMigration(customerDto: Seq[CustomerDto])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = {
     for{
-      _ <- customerRepository.insertCustomers(customerDto, postgresUrl, postgresUsername, postgresPassword)
+      _ <- customerRepository.insertCustomers(customerDto)(postgresUrl, postgresUsername, postgresPassword)
     }yield ()
   }
 }
