@@ -2,8 +2,8 @@ package com.migrator
 
 import com.migrator.dto.CustomerDto
 import com.migrator.models.MigratorOptions
-import com.migrator.repository.CustomerRepositoryImpl
-import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, PostgresMigratorService, PostgresMigratorServiceImpl}
+import com.migrator.repository.PostgresCashFlowRepositoryImpl
+import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl}
 import com.migrator.utils.Constants._
 import com.migrator.utils.MongoDbConnectionImpl
 import zio._
@@ -49,16 +49,16 @@ object Main extends ZIOCliDefault {
 
     val program = for {
       mongoDbCashFlowService <- ZIO.service[MongoDbCashFlowService]
-      postgresMigratorService <- ZIO.service[PostgresMigratorService]
-      _ <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
-      _ <- postgresMigratorService.performPostgresMigration(customerDto)(postgresUrl, postgresUsername, postgresPassword)
+      postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
+      cashFlowRecords <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
+      _ <- postgresCashFlowService.insertCashFlowRecords(cashFlowRecords)(postgresUrl, postgresUsername, postgresPassword)
     } yield()
 
     program.provide(
       MongoDbConnectionImpl.live,
       MongoDbCashFlowServiceImpl.live,
-      PostgresMigratorServiceImpl.live,
-      CustomerRepositoryImpl.live
+      PostgresCashFlowServiceImpl.live,
+      PostgresCashFlowRepositoryImpl.live
     )
   }
 

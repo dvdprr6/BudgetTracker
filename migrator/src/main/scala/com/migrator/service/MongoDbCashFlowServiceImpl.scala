@@ -1,7 +1,7 @@
 package com.migrator.service
 
 import com.migrator.models.CashFlow
-import com.migrator.repository.{CashFlowRepository, CashFlowRepositoryImpl}
+import com.migrator.repository.{MongoDbCashFlowRepository, MongoDbCashFlowRepositoryImpl}
 import com.migrator.utils.MongoDbConnection
 import zio.{Task, ZIO, ZLayer}
 
@@ -14,13 +14,13 @@ class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection) extends M
 
   override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] = {
     val program = for{
-      cashFlowRepository <- ZIO.service[CashFlowRepository]
+      cashFlowRepository <- ZIO.service[MongoDbCashFlowRepository]
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
       cashFlow <- cashFlowRepository.getCashFlowRecords(mongoDbClient)
       _ = mongoDbClient.close()
     } yield cashFlow
 
-    program.provide(CashFlowRepositoryImpl.live)
+    program.provide(MongoDbCashFlowRepositoryImpl.live)
   }
 }
 

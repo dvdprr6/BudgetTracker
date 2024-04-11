@@ -11,11 +11,11 @@ import org.bson.codecs.configuration.{CodecRegistries, CodecRegistry}
 import org.bson.codecs.pojo.PojoCodecProvider
 import zio._
 
-trait CashFlowRepository{
+trait MongoDbCashFlowRepository{
   def getCashFlowRecords(mongoClient: MongoClient): Task[Seq[CashFlow]]
 }
 
-class CashFlowRepositoryImpl extends CashFlowRepository{
+class MongoDbCashFlowRepositoryImpl extends MongoDbCashFlowRepository{
 
   override def getCashFlowRecords(mongoClient: MongoClient): Task[Seq[CashFlow]] = ZIO.succeed{
     val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
@@ -31,9 +31,9 @@ class CashFlowRepositoryImpl extends CashFlowRepository{
   }
 }
 
-object CashFlowRepositoryImpl{
-  private def create: CashFlowRepository = new CashFlowRepositoryImpl
+object MongoDbCashFlowRepositoryImpl{
+  private def create: MongoDbCashFlowRepository = new MongoDbCashFlowRepositoryImpl
 
-  lazy val live: ZLayer[Any, Nothing, CashFlowRepository] =
+  lazy val live: ZLayer[Any, Nothing, MongoDbCashFlowRepository] =
     ZLayer.succeed(create)
 }
