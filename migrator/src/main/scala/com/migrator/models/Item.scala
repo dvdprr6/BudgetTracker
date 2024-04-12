@@ -4,10 +4,10 @@ import org.bson.types.ObjectId
 
 import java.util.Date
 
-case class Item(objectId: ObjectId,
+case class Item(id: ObjectId,
                 itemName: String,
                 amount: Double,
                 itemType: String,
-                category: Category,
+                categoryId: ObjectId,
                 createDate: Date,
                 modifiedDate: Date)

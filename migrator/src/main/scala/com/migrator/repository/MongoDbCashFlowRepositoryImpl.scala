@@ -1,14 +1,8 @@
 package com.migrator.repository
 
-import com.migrator.codec.CashFlowCodec
 import com.migrator.models.CashFlow
 import com.migrator.utils.Constants.MONGODB_DATABASE
-import com.mongodb.MongoClientSettings
 import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
-import org.bson.Document
-import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
-import org.bson.codecs.configuration.{CodecRegistries, CodecRegistry}
-import org.bson.codecs.pojo.PojoCodecProvider
 import zio._
 
 trait MongoDbCashFlowRepository{

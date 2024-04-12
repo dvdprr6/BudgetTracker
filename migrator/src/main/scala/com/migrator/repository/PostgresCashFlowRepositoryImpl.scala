@@ -15,7 +15,7 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with Pos
   import Entity._
 
   override def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
-    val statement = insertInto(cashFlowTable)(objectId, amount, delta, createDate, modifiedDate).values(cashFlow)
+    val statement = insertInto(cashFlowTable)(id, amount, delta, createDate, modifiedDate).values(cashFlow)
 
     execute(statement).provide(
       PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
@@ -27,7 +27,7 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with Pos
   private object Entity{
     val cashFlowTable = defineTable[CashFlow]("cash_flow")
 
-    val (objectId, amount, delta, createDate, modifiedDate) = cashFlowTable.columns
+    val (id, amount, delta, createDate, modifiedDate) = cashFlowTable.columns
   }
 }
 

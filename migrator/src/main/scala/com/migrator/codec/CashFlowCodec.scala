@@ -10,13 +10,13 @@ import java.util.Date
 class CashFlowCodec extends Codec[CashFlow]{
 
   override def decode(bsonReader: BsonReader, decoderContext: DecoderContext): CashFlow = {
-    bsonReader.readStartDocument()
-
     var cashFlow = CashFlow(new ObjectId(), 0.00, 0.00, new Date, new Date)
+
+    bsonReader.readStartDocument()
 
     while (bsonReader.readBsonType() != BsonType.END_OF_DOCUMENT){
       cashFlow = bsonReader.readName() match {
-        case "_id" => cashFlow.copy(objectId = bsonReader.readObjectId())
+        case "_id" => cashFlow.copy(id = bsonReader.readObjectId())
         case "amount" => cashFlow.copy(amount = bsonReader.readDouble())
         case "create_date" => cashFlow.copy(createDate = new Date(bsonReader.readDateTime()))
         case "delta" => cashFlow.copy(delta = bsonReader.readDouble())

@@ -4,7 +4,7 @@ import org.bson.types.ObjectId
 
 import java.util.Date
 
-case class CashFlow(objectId: ObjectId,
+case class CashFlow(id: ObjectId,
                     amount: Double,
                     delta: Double,
                     createDate: Date,
