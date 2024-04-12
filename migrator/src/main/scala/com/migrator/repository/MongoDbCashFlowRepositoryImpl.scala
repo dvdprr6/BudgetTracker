@@ -17,8 +17,8 @@ class MongoDbCashFlowRepositoryImpl extends MongoDbCashFlowRepository{
 
     var cashFlowDocuments: Seq[CashFlow] = Seq()
 
-    collection.find().forEach{item =>
-      cashFlowDocuments = cashFlowDocuments :+ item
+    collection.find().forEach{record =>
+      cashFlowDocuments = cashFlowDocuments :+ record
     }
 
     cashFlowDocuments
@@ -26,8 +26,8 @@ class MongoDbCashFlowRepositoryImpl extends MongoDbCashFlowRepository{
 }
 
 object MongoDbCashFlowRepositoryImpl{
-  private def create: MongoDbCashFlowRepository = new MongoDbCashFlowRepositoryImpl
+  private def apply: MongoDbCashFlowRepository = new MongoDbCashFlowRepositoryImpl
 
   lazy val live: ZLayer[Any, Nothing, MongoDbCashFlowRepository] =
-    ZLayer.succeed(create)
+    ZLayer.succeed(apply)
 }

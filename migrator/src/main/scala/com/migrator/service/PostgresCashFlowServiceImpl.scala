@@ -18,9 +18,9 @@ class PostgresCashFlowServiceImpl(postgresCashFlowRepository: PostgresCashFlowRe
 }
 
 object PostgresCashFlowServiceImpl{
-  private def create(postgresCashFlowRepository: PostgresCashFlowRepository) =
+  private def apply(postgresCashFlowRepository: PostgresCashFlowRepository) =
     new PostgresCashFlowServiceImpl(postgresCashFlowRepository)
 
   lazy val live: ZLayer[PostgresCashFlowRepository, Throwable, PostgresCashFlowService] =
-    ZLayer.fromFunction(create _)
+    ZLayer.fromFunction(apply _)
 }

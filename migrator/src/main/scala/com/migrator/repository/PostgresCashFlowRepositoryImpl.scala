@@ -32,8 +32,8 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with Pos
 }
 
 object PostgresCashFlowRepositoryImpl{
-  private def create(): PostgresCashFlowRepository = new PostgresCashFlowRepositoryImpl
+  private def apply: PostgresCashFlowRepository = new PostgresCashFlowRepositoryImpl
 
   lazy val live: ZLayer[Any, Throwable, PostgresCashFlowRepository] =
-    ZLayer.succeed(create)
+    ZLayer.succeed(apply)
 }

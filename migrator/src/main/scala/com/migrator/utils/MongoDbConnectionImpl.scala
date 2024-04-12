@@ -28,8 +28,8 @@ class MongoDbConnectionImpl extends MongoDbConnection {
 }
 
 object MongoDbConnectionImpl{
-  private def create(): MongoDbConnection = new MongoDbConnectionImpl
+  private def apply: MongoDbConnection = new MongoDbConnectionImpl
 
   lazy val live: ZLayer[Any, Nothing, MongoDbConnection] =
-    ZLayer.succeed(create)
+    ZLayer.succeed(apply)
 }

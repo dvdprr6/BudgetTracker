@@ -14,9 +14,9 @@ class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection) extends M
 
   override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] = {
     val program = for{
-      cashFlowRepository <- ZIO.service[MongoDbCashFlowRepository]
+      mongoDbCashFlowRepository <- ZIO.service[MongoDbCashFlowRepository]
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
-      cashFlow <- cashFlowRepository.getCashFlowRecords(mongoDbClient)
+      cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords(mongoDbClient)
       _ = mongoDbClient.close()
     } yield cashFlow
 
@@ -25,9 +25,9 @@ class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection) extends M
 }
 
 object MongoDbCashFlowServiceImpl{
-  private def create(mongoDbConnection: MongoDbConnection) =
+  private def apply(mongoDbConnection: MongoDbConnection) =
     new MongoDbCashFlowServiceImpl(mongoDbConnection)
 
   lazy val live: ZLayer[MongoDbConnection, Throwable, MongoDbCashFlowService] =
-    ZLayer.fromFunction(create _)
+    ZLayer.fromFunction(apply _)
 }
