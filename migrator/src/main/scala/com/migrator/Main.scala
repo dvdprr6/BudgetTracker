@@ -1,6 +1,5 @@
 package com.migrator
 
-import com.migrator.dto.CustomerDto
 import com.migrator.models.MigratorOptions
 import com.migrator.repository.PostgresCashFlowRepositoryImpl
 import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl}
@@ -9,9 +8,6 @@ import com.migrator.utils.MongoDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
-
-import java.time.LocalDate
-import java.util.UUID
 
 object Main extends ZIOCliDefault {
 
