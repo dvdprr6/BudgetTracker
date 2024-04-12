@@ -1,33 +1,30 @@
 package com.migrator.service
 
 import com.migrator.models.CashFlow
-import com.migrator.repository.{MongoDbCashFlowRepository, MongoDbCashFlowRepositoryImpl}
+import com.migrator.repository.MongoDbCashFlowRepository
 import com.migrator.utils.MongoDbConnection
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait MongoDbCashFlowService{
   def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]]
 }
 
+class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbCashFlowRepository: MongoDbCashFlowRepository) extends MongoDbCashFlowService {
 
-class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection) extends MongoDbCashFlowService {
-
-  override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] = {
-    val program = for{
-      mongoDbCashFlowRepository <- ZIO.service[MongoDbCashFlowRepository]
+  override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] =
+    for {
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
       cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords(mongoDbClient)
       _ = mongoDbClient.close()
     } yield cashFlow
-
-    program.provide(MongoDbCashFlowRepositoryImpl.live)
-  }
 }
 
 object MongoDbCashFlowServiceImpl{
-  private def apply(mongoDbConnection: MongoDbConnection) =
-    new MongoDbCashFlowServiceImpl(mongoDbConnection)
+  private type MongoDbCashFlow = MongoDbConnection with MongoDbCashFlowRepository
 
-  lazy val live: ZLayer[MongoDbConnection, Throwable, MongoDbCashFlowService] =
+  private def apply(mongoDbConnection: MongoDbConnection, mongoDbCashFlowRepository: MongoDbCashFlowRepository): MongoDbCashFlowService =
+    new MongoDbCashFlowServiceImpl(mongoDbConnection, mongoDbCashFlowRepository)
+
+  lazy val live: ZLayer[MongoDbCashFlow, Throwable, MongoDbCashFlowService] =
     ZLayer.fromFunction(apply _)
 }

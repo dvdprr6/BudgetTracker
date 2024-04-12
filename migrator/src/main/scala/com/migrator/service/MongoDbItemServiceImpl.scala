@@ -9,24 +9,23 @@ trait MongoDbItemService{
   def getItemRecords(mongoDbUrl: String): Task[Seq[Item]]
 }
 
-class MongoDbItemServiceImpl(mongoDbConnection: MongoDbConnection) extends MongoDbItemService {
+class MongoDbItemServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbItemRepository: MongoDbItemRepository) extends MongoDbItemService {
 
   override def getItemRecords(mongoDbUrl: String): Task[Seq[Item]] = {
-    val program = for{
-      mongoDbItemRepository <- ZIO.service[MongoDbItemRepository]
+    for{
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
       item <- mongoDbItemRepository.getItemRecords(mongoDbClient)
       _ = mongoDbClient.close()
     } yield item
-
-    program.provide(MongoDbItemRepositoryImpl.live)
   }
 }
 
 object MongoDbItemServiceImpl{
-  private def apply(mongoDbConnection: MongoDbConnection) =
-    new MongoDbItemServiceImpl(mongoDbConnection)
+  private type MongoDbItem = MongoDbConnection with MongoDbItemRepository
 
-  lazy val live: ZLayer[MongoDbConnection, Throwable, MongoDbItemService] =
+  private def apply(mongoDbConnection: MongoDbConnection, mongoDbItemRepository: MongoDbItemRepository): MongoDbItemService =
+    new MongoDbItemServiceImpl(mongoDbConnection, mongoDbItemRepository)
+
+  lazy val live: ZLayer[MongoDbItem, Throwable, MongoDbItemService] =
     ZLayer.fromFunction(apply _)
 }
