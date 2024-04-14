@@ -1,8 +1,8 @@
 package com.migrator
 
 import com.migrator.models.MigratorOptions
-import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl}
-import com.migrator.service.{MongoDbCategoryService, MongoDbCategoryServiceImpl}
+import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl, PostgresCashFlowRepositoryImpl}
+import com.migrator.service.{MongoDbCategoryService, MongoDbCategoryServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl}
 //import com.migrator.repository.PostgresCashFlowRepositoryImpl
 import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbItemService, MongoDbItemServiceImpl}
 import com.migrator.utils.Constants._
@@ -39,12 +39,11 @@ object Main extends ZIOCliDefault {
       mongoDbCashFlowService <- ZIO.service[MongoDbCashFlowService]
       mongoDbItemService <- ZIO.service[MongoDbItemService]
       mongoDbCategoryService <- ZIO.service[MongoDbCategoryService]
-      //postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
+      postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
       mongoDbCashFlowRecords <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
       mongoDbItemRecords <- mongoDbItemService.getItemRecords(mongoDbUrl)
       mongoDbCategoryRecords <- mongoDbCategoryService.getCategoryRecords(mongoDbUrl)
-      _ = "x"
-      //_ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)(postgresUrl, postgresUsername, postgresPassword)
+      _ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)(postgresUrl, postgresUsername, postgresPassword)
     } yield()
 
     program.provide(
@@ -59,9 +58,13 @@ object Main extends ZIOCliDefault {
       /* MONGO DB SERVICE LAYERS */
       MongoDbCashFlowServiceImpl.live,
       MongoDbItemServiceImpl.live,
-      MongoDbCategoryServiceImpl.live
-      //PostgresCashFlowServiceImpl.live,
-      //PostgresCashFlowRepositoryImpl.live
+      MongoDbCategoryServiceImpl.live,
+
+      /* POSTGRESQL REPOSITORY LAYERS */
+      PostgresCashFlowRepositoryImpl.live,
+
+      /* POSTGRESQL SERVICE LAYERS */
+      PostgresCashFlowServiceImpl.live
     )
   }
 
