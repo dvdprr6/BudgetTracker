@@ -45,10 +45,10 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with Pos
     val (id, amount, delta, createDate, modifiedDate) = cashFlowTable.columns
 
     def toCashFlowEntity(cashFlow: CashFlow): CashFlowEntity = {
-      val createDateLocalDate: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.createDate)
-      val modifiedDateLocalDate: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.modifiedDate)
+      val createDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.createDate)
+      val modifiedDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.modifiedDate)
 
-      CashFlowEntity(cashFlow.id.toHexString, cashFlow.amount, cashFlow.delta, createDateLocalDate, modifiedDateLocalDate)
+      CashFlowEntity(cashFlow.id.toHexString, cashFlow.amount, cashFlow.delta, createDateLocalDateTime, modifiedDateLocalDateTime)
     }
   }
 }

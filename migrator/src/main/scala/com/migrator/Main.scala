@@ -1,10 +1,8 @@
 package com.migrator
 
 import com.migrator.models.MigratorOptions
-import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl, PostgresCashFlowRepositoryImpl}
-import com.migrator.service.{MongoDbCategoryService, MongoDbCategoryServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl}
-//import com.migrator.repository.PostgresCashFlowRepositoryImpl
-import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbItemService, MongoDbItemServiceImpl}
+import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl, PostgresCashFlowRepositoryImpl, PostgresCategoryRepositoryImpl, PostgresItemRepositoryImpl}
+import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresCategoryService, PostgresCategoryServiceImpl, PostgresItemService, PostgresItemServiceImpl}
 import com.migrator.utils.Constants._
 import com.migrator.utils.MongoDbConnectionImpl
 import zio._
@@ -36,14 +34,22 @@ object Main extends ZIOCliDefault {
     val mongoDbUrl = migratorOptions.mongoDbUrl
 
     val program = for {
+      /* MONGO DB SERVICES */
       mongoDbCashFlowService <- ZIO.service[MongoDbCashFlowService]
       mongoDbItemService <- ZIO.service[MongoDbItemService]
       mongoDbCategoryService <- ZIO.service[MongoDbCategoryService]
+      /* POSTGRES SERVICES */
       postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
+      postgresItemService <- ZIO.service[PostgresItemService]
+      postgresCategoryService <- ZIO.service[PostgresCategoryService]
+      /* MONGO DB IMPLEMENTATION */
       mongoDbCashFlowRecords <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
       mongoDbItemRecords <- mongoDbItemService.getItemRecords(mongoDbUrl)
       mongoDbCategoryRecords <- mongoDbCategoryService.getCategoryRecords(mongoDbUrl)
+      /* POSTGRES IMPLEMENTATION */
       _ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)(postgresUrl, postgresUsername, postgresPassword)
+      _ <- postgresItemService.insertItemRecords(mongoDbItemRecords)(postgresUrl, postgresUsername, postgresPassword)
+      _ <- postgresCategoryService.insertCategoryRecords(mongoDbCategoryRecords)(postgresUrl, postgresUsername, postgresPassword)
     } yield()
 
     program.provide(
@@ -62,9 +68,13 @@ object Main extends ZIOCliDefault {
 
       /* POSTGRESQL REPOSITORY LAYERS */
       PostgresCashFlowRepositoryImpl.live,
+      PostgresItemRepositoryImpl.live,
+      PostgresCategoryRepositoryImpl.live,
 
       /* POSTGRESQL SERVICE LAYERS */
-      PostgresCashFlowServiceImpl.live
+      PostgresCashFlowServiceImpl.live,
+      PostgresItemServiceImpl.live,
+      PostgresCategoryServiceImpl.live
     )
   }
 

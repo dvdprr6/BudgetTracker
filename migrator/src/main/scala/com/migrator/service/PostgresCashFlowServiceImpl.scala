@@ -10,11 +10,10 @@ trait PostgresCashFlowService{
 
 class PostgresCashFlowServiceImpl(postgresCashFlowRepository: PostgresCashFlowRepository) extends PostgresCashFlowService {
 
-  override def insertCashFlowRecords(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = {
+  override def insertCashFlowRecords(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
     for{
       _ <- postgresCashFlowRepository.insert(cashFlow)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
     } yield ()
-  }
 }
 
 object PostgresCashFlowServiceImpl{
