@@ -1,10 +1,10 @@
 plugins {
   id 'java'
   id 'scala'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+group = 'com.migrator'
+//version = '1.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
@@ -41,6 +41,75 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+jar {
+  manifest {
+    attributes 'Main-Class': 'com.migrator.Main'
+  }
+}
+
+shadowJar {
+  archiveBaseName.set('migrator')
+  archiveClassifier.set('')
+  archiveVersion.set('')
+}
+
+
+task dist(dependsOn: shadowJar, type: Copy){
+  from 'build/libs'
+  into "/home/david/dist/proj/BudgetTracker/migrator-${getDate()}-${incrementBuild()}/lib"
+  include '*.jar'
+}
+
 test {
   useJUnitPlatform()
+}
+
+
+def getDate(){
+  return new Date().format('yyyy-MM-dd')
+}
+
+def incrementBuild(){
+  var currentDate = getDate()
+  String proj = 'migrator'
+  List<String> directoryInfo = []
+  fileTree('/home/david/dist/proj/BudgetTracker/').visit { FileVisitDetails fvd ->
+    if(fvd.directory && fvd.name.contains(currentDate) && fvd.name.contains("migrator")) {
+      directoryInfo << fvd.file.name
+    }
+  }
+
+  var currentDateBuilds = directoryInfo.each {
+    if(it.contains(proj) && it.contains(currentDate)){
+      return it
+    }
+  }
+
+  var sortCurrentBuilds = currentDateBuilds.sort {a, b ->
+    var aLength = a.length()
+    var aLastIndex = a.lastIndexOf("-")
+    var bLength = b.length()
+    var bLastIndex = b.lastIndexOf("-")
+
+    var aSubString = a.substring(aLastIndex + 1, aLength)
+    var bSubString = b.substring(bLastIndex + 1, bLength)
+
+    var aInteger = aSubString.toInteger()
+    var bInteger = bSubString.toInteger()
+
+    aInteger <=> bInteger
+  }
+
+  if(!sortCurrentBuilds.isEmpty()){
+    var previousBuild = sortCurrentBuilds.last()
+
+    var previousBuildLength = previousBuild.length()
+    var previousBuildLastIndex = previousBuild.lastIndexOf("-")
+
+    var buildInteger = previousBuild.substring(previousBuildLastIndex + 1, previousBuildLength).toInteger()
+
+    return buildInteger + 1
+  }else{
+    return 1
+  }
 }
