@@ -1,8 +1,10 @@
 import { createTheme, Theme } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-import {Navigation} from "./components/navigation";
-import CssBaseline from '@mui/material/CssBaseline';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Home } from '@budgettracker-components-home'
+import { DashboardPage } from '@budgettracker-components-dashboard'
+import CssBaseline from '@mui/material/CssBaseline'
+import { HOME_REDIRECT, DASHBOARD_REDIRECT } from '@budgettracker-utils'
 
 const theme: Theme = createTheme({
   palette: {
@@ -62,8 +64,12 @@ const theme: Theme = createTheme({
 
 const router = createBrowserRouter([
   {
-    path: '/BudgetTracker',
-    element: <Navigation />
+    path: HOME_REDIRECT,
+    element: <Home />
+  },
+  {
+    path: DASHBOARD_REDIRECT,
+    element: <DashboardPage />
   }
 ])
 

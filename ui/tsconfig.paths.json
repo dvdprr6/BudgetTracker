@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      /** RENDERER ALIASES */
+      "@budgettracker-components-home": ["src/components/home*", "src/components/home"],
+      "@budgettracker-components-navigation": ["src/components/navigation*", "src/components/navigation"],
+      "@budgettracker-components-dashboard": ["src/components/dashboard*", "src/components/dashboard"],
+      "@budgettracker-utils": ["src/utils*", "src/utils"]
+    }
+  }
+}
