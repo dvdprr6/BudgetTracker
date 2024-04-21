@@ -3,8 +3,8 @@ import MenuIcon from '@mui/icons-material/Menu'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from '@mui/material'
 import { styled } from '@mui/material/styles'
-
-const pages = ['Dashboard', 'Pricing', 'Blog']
+import { DASHBOARD_REDIRECT, CATEGORIES_REDIRECT } from '@budgettracker-utils'
+import { useNavigate } from 'react-router-dom'
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -18,8 +18,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const Navigation: FC<{ component: ReactNode }> = (props) => {
   const { component: Component } = props
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
+  const navigate = useNavigate()
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
+  }
+
+  const handleRedirect = (redirectUrl: string) => {
+    navigate(redirectUrl)
+    //setAnchorElNav(null)
   }
 
   const handleCloseNavMenu = () => {
@@ -78,11 +85,12 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem onClick={() => handleRedirect(DASHBOARD_REDIRECT)}>
+                  <Typography textAlign={'center'}>Dashboard</Typography>
+                </MenuItem>
+                <MenuItem onClick={() => handleRedirect(CATEGORIES_REDIRECT)}>
+                  <Typography textAlign={'center'}>Categories</Typography>
+                </MenuItem>
               </Menu>
             </Box>
             <TrendingUpIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -105,15 +113,12 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
               Budget Tracker
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  {page}
-                </Button>
-              ))}
+              <Button onClick={() => handleRedirect(DASHBOARD_REDIRECT)} sx={{ my: 2, color: 'white', display: 'block' }}>
+                  Dashboard
+              </Button>
+              <Button onClick={() => handleRedirect(CATEGORIES_REDIRECT)} sx={{ my: 2, color: 'white', display: 'block' }}>
+                Categories
+              </Button>
             </Box>
           </Toolbar>
         </Container>

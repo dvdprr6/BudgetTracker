@@ -124,7 +124,7 @@ const Dashboard = () => {
       <Grid item xs={12}>
         <Card variant={'outlined'} sx={{ height: '100%'}}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ maxHeight: '100%' }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>

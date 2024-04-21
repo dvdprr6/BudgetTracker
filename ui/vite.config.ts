@@ -12,6 +12,7 @@ export default defineConfig({
       '@budgettracker-components-home': path.resolve(__dirname, './src/components/home'),
       '@budgettracker-components-navigation': path.resolve(__dirname, './src/components/navigation'),
       '@budgettracker-components-dashboard': path.resolve(__dirname, './src/components/dashboard'),
+      '@budgettracker-components-categories': path.resolve(__dirname, './src/components/categories'),
       '@budgettracker-utils': path.resolve(__dirname, './src/utils')
     }
   }
