@@ -2,3 +2,5 @@ rootProject.name = 'BudgetTracker'
 include 'migrator'
 include 'mobile'
 include 'ui'
+include 'api'
+

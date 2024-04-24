@@ -42,11 +42,11 @@ const columns: readonly Column[] = [
 ];
 
 interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
+  name: string
+  code: string
+  population: number
+  size: number
+  density: number
 }
 
 function createData(
@@ -69,6 +69,11 @@ const rows = [
   // createData('Germany', 'DE', 83019200, 357578),
   // createData('Ireland', 'IE', 4857000, 70273),
   // createData('Mexico', 'MX', 126577691, 1972550),
+  // createData('Japan', 'JP', 126317000, 377973),
+  // createData('France', 'FR', 67022000, 640679),
+  //
+  // createData('Japan', 'JP', 126317000, 377973),
+  // createData('France', 'FR', 67022000, 640679),
   // createData('Japan', 'JP', 126317000, 377973),
   // createData('France', 'FR', 67022000, 640679)
 ];

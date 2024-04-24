@@ -72,7 +72,7 @@ const rows = [
   createData('Mexico', 'MX', 126577691, 1972550),
   createData('Japan', 'JP', 126317000, 377973),
   createData('France', 'FR', 67022000, 640679)
-];
+]
 
 const Categories = () => {
   const [page, setPage] = useState(0)
