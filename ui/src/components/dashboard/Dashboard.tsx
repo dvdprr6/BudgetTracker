@@ -5,6 +5,7 @@ import {
   TableBody, TableCell, TableContainer,
   TableHead, TablePagination, TableRow
 } from '@mui/material'
+import { TABLE_MAX_HEIGHT } from '@budgettracker-utils'
 
 interface Column {
   id: 'name' | 'code' | 'population' | 'size' | 'density';
@@ -98,9 +99,6 @@ const Dashboard = () => {
               ]}
               width={600}
               height={400}
-              // slotProps={{
-              //   legend: { position: 'horizontal' }
-              // }}
             />
           </Box>
         </Card>
@@ -124,7 +122,7 @@ const Dashboard = () => {
       <Grid item xs={12}>
         <Card variant={'outlined'} sx={{ height: '100%'}}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: '100%' }}>
+            <TableContainer sx={{ maxHeight: TABLE_MAX_HEIGHT }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
