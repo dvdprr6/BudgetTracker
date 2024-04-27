@@ -1,9 +1,9 @@
 package com.migrator.service
 
-import com.migrator.models.Item
-import com.migrator.repository.{MongoDbItemRepository, MongoDbItemRepositoryImpl}
+import com.commons.models.Item
+import com.migrator.repository.MongoDbItemRepository
 import com.migrator.utils.MongoDbConnection
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait MongoDbItemService{
   def getItemRecords(mongoDbUrl: String): Task[Seq[Item]]

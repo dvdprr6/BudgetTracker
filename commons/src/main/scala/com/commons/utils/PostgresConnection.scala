@@ -1,4 +1,4 @@
-package com.migrator.utils
+package com.commons.utils
 
 import zio.ZLayer
 import zio.sql.ConnectionPoolConfig

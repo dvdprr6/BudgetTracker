@@ -1,9 +1,9 @@
 package com.migrator.service
 
-import com.migrator.models.Category
+import com.commons.models.Category
 import com.migrator.repository.MongoDbCategoryRepository
 import com.migrator.utils.MongoDbConnection
-import zio.{Task, ZIO, ZLayer}
+import zio._
 
 trait MongoDbCategoryService{
   def getCategoryRecords(mongoDbUrl: String): Task[Seq[Category]]

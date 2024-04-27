@@ -1,7 +1,7 @@
-package com.migrator.repository
+package com.commons.repository
 
-import com.migrator.models.Item
-import com.migrator.utils.{PostgresConnection, Utils}
+import com.commons.models.Item
+import com.commons.utils.{PostgresConnection, Utils}
 import zio.{ZIO, ZLayer}
 import zio.schema.DeriveSchema
 import zio.sql.ConnectionPool

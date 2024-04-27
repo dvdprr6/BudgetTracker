@@ -1,4 +1,4 @@
-package com.migrator.models
+package com.commons.models
 
 import org.bson.types.ObjectId
 

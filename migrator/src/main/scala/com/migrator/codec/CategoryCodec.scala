@@ -1,6 +1,6 @@
 package com.migrator.codec
 
-import com.migrator.models.Category
+import com.commons.models.Category
 import org.bson.{BsonReader, BsonType, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.types.ObjectId

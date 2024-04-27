@@ -1,7 +1,7 @@
-package com.migrator.service
+package com.commons.service
 
-import com.migrator.models.CashFlow
-import com.migrator.repository.PostgresCashFlowRepository
+import com.commons.models.CashFlow
+import com.commons.repository.PostgresCashFlowRepository
 import zio.{Task, ZLayer}
 
 trait PostgresCashFlowService{

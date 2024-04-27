@@ -1,6 +1,6 @@
 package com.migrator.service
 
-import com.migrator.models.CashFlow
+import com.commons.models.CashFlow
 import com.migrator.repository.MongoDbCashFlowRepository
 import com.migrator.utils.MongoDbConnection
 import zio.{Task, ZLayer}

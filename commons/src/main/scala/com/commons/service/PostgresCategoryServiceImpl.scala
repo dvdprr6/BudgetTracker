@@ -1,7 +1,7 @@
-package com.migrator.service
+package com.commons.service
 
-import com.migrator.models.Category
-import com.migrator.repository.PostgresCategoryRepository
+import com.commons.models.Category
+import com.commons.repository.PostgresCategoryRepository
 import zio.{Task, ZLayer}
 
 trait PostgresCategoryService{

@@ -1,6 +1,6 @@
 package com.migrator.codec
 
-import com.migrator.models.CashFlow
+import com.commons.models.CashFlow
 import org.bson.{BsonReader, BsonType, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.types.ObjectId

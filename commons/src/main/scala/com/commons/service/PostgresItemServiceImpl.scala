@@ -1,7 +1,7 @@
-package com.migrator.service
+package com.commons.service
 
-import com.migrator.models.Item
-import com.migrator.repository.PostgresItemRepository
+import com.commons.models.Item
+import com.commons.repository.PostgresItemRepository
 import zio.{Task, ZLayer}
 
 trait PostgresItemService{

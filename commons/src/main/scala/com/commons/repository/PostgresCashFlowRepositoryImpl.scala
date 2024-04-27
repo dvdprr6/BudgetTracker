@@ -1,7 +1,7 @@
-package com.migrator.repository
+package com.commons.repository
 
-import com.migrator.models.CashFlow
-import com.migrator.utils.{PostgresConnection, Utils}
+import com.commons.models.CashFlow
+import com.commons.utils.{PostgresConnection, Utils}
 import zio.schema.DeriveSchema
 import zio.{ZIO, ZLayer}
 import zio.sql.ConnectionPool

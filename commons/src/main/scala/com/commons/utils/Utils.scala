@@ -1,4 +1,4 @@
-package com.migrator.utils
+package com.commons.utils
 
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.Date

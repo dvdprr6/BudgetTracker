@@ -4,7 +4,8 @@ import com.api.models.ApiOptions
 import com.api.utils.Constants._
 import zio._
 import zio.cli.HelpDoc.Span.text
-import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
+import zio.cli._
+import zio.http._
 
 object Main extends ZIOCliDefault{
 
@@ -25,6 +26,12 @@ object Main extends ZIOCliDefault{
   }
 
   private def execute(apiOptions: ApiOptions): ZIO[Any, Throwable, Unit] = {
-    ZIO.succeed()
+    val postgresUrl = apiOptions.postgresUrl
+    val postgresUsername = apiOptions.postgresUsername
+    val postgresPassword = apiOptions.postgresPassword
+
+    val homeRoute = Method.GET / "greet"  -> handler(Response.text("Hello World!"))
+
+    Server.serve(homeRoute.toHttpApp).provide(Server.default)
   }
 }
