@@ -3,7 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { DASHBOARD_REDIRECT, CATEGORIES_REDIRECT } from '@budgettracker-utils'
+import { DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT } from '@budgettracker-utils'
 import { useNavigate } from 'react-router-dom'
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -114,10 +114,13 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button onClick={() => handleRedirect(DASHBOARD_REDIRECT)} sx={{ my: 2, color: 'white', display: 'block' }}>
-                  Dashboard
+                Dashboard
               </Button>
               <Button onClick={() => handleRedirect(CATEGORIES_REDIRECT)} sx={{ my: 2, color: 'white', display: 'block' }}>
                 Categories
+              </Button>
+              <Button onClick={() => handleRedirect(CASH_FLOW_REDIRECT)} sx={{ my: 2, color: 'white', display: 'block' }}>
+                Cash Flow
               </Button>
             </Box>
           </Toolbar>

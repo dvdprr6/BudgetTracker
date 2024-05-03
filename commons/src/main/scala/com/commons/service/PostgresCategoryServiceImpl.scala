@@ -3,7 +3,7 @@ package com.commons.service
 import com.commons.models.{Category, CategoryDto}
 import com.commons.repository.PostgresCategoryRepository
 import com.commons.utils.Utils
-import zio.{Task, UIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait PostgresCategoryService{
   def getCategoryRecords()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Seq[CategoryDto]]

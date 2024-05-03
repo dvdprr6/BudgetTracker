@@ -7,6 +7,7 @@
       "@budgettracker-components-navigation": ["src/components/navigation*", "src/components/navigation"],
       "@budgettracker-components-dashboard": ["src/components/dashboard*", "src/components/dashboard"],
       "@budgettracker-components-categories": ["src/components/categories*", "src/components/categories"],
+      "@budgettracker-components-cashFlow": ["src/components/cashFlow*", "src/components/cashFlow"],
       "@budgettracker-utils": ["src/utils*", "src/utils"]
     }
   }
