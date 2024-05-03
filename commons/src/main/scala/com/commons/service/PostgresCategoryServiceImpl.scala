@@ -1,14 +1,23 @@
 package com.commons.service
 
-import com.commons.models.Category
+import com.commons.models.{Category, CategoryDto}
 import com.commons.repository.PostgresCategoryRepository
-import zio.{Task, ZLayer}
+import com.commons.utils.Utils
+import zio.{Task, UIO, ZLayer}
 
 trait PostgresCategoryService{
+  def getCategoryRecords()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Seq[CategoryDto]]
+
   def insertCategoryRecords(category: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
 class PostgresCategoryServiceImpl(postgresCategoryRepository: PostgresCategoryRepository) extends PostgresCategoryService{
+
+  override def getCategoryRecords()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Seq[CategoryDto]] =
+    for{
+      categoryRecords <- postgresCategoryRepository.get()(postgresUrl, postgresUsername, postgresPassword)
+      categoryDtoRecords = categoryRecords.map(record => Utils.categoryToCategoryDto(record))
+    } yield categoryDtoRecords
 
   override def insertCategoryRecords(category: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
     for{

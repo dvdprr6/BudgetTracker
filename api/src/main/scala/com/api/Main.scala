@@ -2,10 +2,13 @@ package com.api
 
 import com.api.models.ApiOptions
 import com.api.utils.Constants._
+import com.commons.repository.PostgresCategoryRepositoryImpl
+import com.commons.service.{PostgresCategoryService, PostgresCategoryServiceImpl}
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli._
 import zio.http._
+import zio.json.EncoderOps
 
 object Main extends ZIOCliDefault{
 
@@ -30,8 +33,28 @@ object Main extends ZIOCliDefault{
     val postgresUsername = apiOptions.postgresUsername
     val postgresPassword = apiOptions.postgresPassword
 
-    val homeRoute = Method.GET / "greet"  -> handler(Response.text("Hello World!"))
+    /* REFERENCE: https://scalac.io/blog/getting-started-with-zio-http/ */
 
-    Server.serve(homeRoute.toHttpApp).provide(Server.default)
+    val app: HttpApp[Any] = Routes(
+      Method.GET / ROOT_URL / "category" -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie
+    ).toHttpApp
+
+    val config = Server.Config.default.port(8080)
+
+    val configLayer = ZLayer.succeed(config)
+
+    Server.serve(app).provide(configLayer, Server.live)
   }
+
+  private def getCategories(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Throwable, Response] = {
+
+    val categories = for {
+      postgresCategoryService <- ZIO.service[PostgresCategoryService]
+      categoryDtoRecords <- postgresCategoryService.getCategoryRecords()(postgresUrl, postgresUsername, postgresPassword)
+    } yield Response.json(categoryDtoRecords.toJson)
+
+    categories.provide(PostgresCategoryServiceImpl.live, PostgresCategoryRepositoryImpl.live)
+  }
+
+
 }

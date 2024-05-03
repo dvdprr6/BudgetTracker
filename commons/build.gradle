@@ -29,6 +29,8 @@ dependencies {
   implementation group: 'dev.zio', name: 'zio-sql_2.13', version: '0.1.2'
   implementation group: 'dev.zio', name: 'zio-sql-postgres_2.13', version: '0.1.2'
   implementation group: 'dev.zio', name: 'zio-jdbc_2.13', version: '0.1.2'
+  implementation group: 'dev.zio', name: 'zio-json_2.13', version: '0.6.2'
+
   implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: '5.0.1'
 
   testImplementation platform('org.junit:junit-bom:5.10.0')

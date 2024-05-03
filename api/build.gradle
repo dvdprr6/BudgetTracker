@@ -24,13 +24,14 @@ sourceSets {
 }
 
 dependencies {
+  implementation project(':commons')
   implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
+
   implementation group: 'dev.zio', name: 'zio_2.13', version: '2.0.20'
   implementation group: 'dev.zio', name: 'zio-sql_2.13', version: '0.1.2'
   implementation group: 'dev.zio', name: 'zio-sql-postgres_2.13', version: '0.1.2'
   implementation group: 'dev.zio', name: 'zio-jdbc_2.13', version: '0.1.2'
   implementation group: 'dev.zio', name: 'zio-cli_2.13', version: '0.5.0'
-
   implementation group: 'dev.zio', name: 'zio-http_2.13', version: '3.0.0-RC6'
 
   testImplementation platform('org.junit:junit-bom:5.10.0')

@@ -2,20 +2,39 @@ package com.commons.repository
 
 import com.commons.models.Category
 import com.commons.utils.{PostgresConnection, Utils}
-import zio.{ZIO, ZLayer}
+import org.bson.types.ObjectId
+import zio.{Task, ZIO, ZLayer}
 import zio.schema.DeriveSchema
 import zio.sql.ConnectionPool
 import zio.sql.postgresql.PostgresJdbcModule
 
 import java.time.LocalDateTime
+import scala.util.{Failure, Success}
 
 trait PostgresCategoryRepository{
+  def get()(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Seq[Category]]
+
   def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
 }
 
 class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresJdbcModule{
 
   import Entity._
+
+  override def get()(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Seq[Category]] = {
+    val statement = select(id, categoryName, createDate, modifiedDate).from(categoryTable)
+
+    val executeProgram = for{
+      categoryRecords <- execute(statement).map(CategoryEntity tupled _).runCollect
+      records = categoryRecords.map(record => toCategory(record))
+    } yield records
+
+    executeProgram.provide(
+      PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
+      ConnectionPool.live,
+      SqlDriver.live
+    )
+  }
 
   override def insert(categories: Seq[Category])(postgresUrl: TableName, postgresUsername: TableName, postgresPassword: TableName): ZIO[Any, Exception, Int] = {
     val categoryEntity = categories.map(record => toCategoryEntity(record))
@@ -50,6 +69,20 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
         category.categoryName,
         createDateLocalDateTime,
         modifiedDateLocalDateTime
+      )
+    }
+
+    def toCategory(categoryEntity: CategoryEntity): Category = {
+      val createDateString = Utils.localDateTimeToDate(categoryEntity.createDate)
+      val modifiedDateString = Utils.localDateTimeToDate(categoryEntity.modifiedDate)
+
+      val objectId = new ObjectId(categoryEntity.id)
+
+      Category(
+        objectId,
+        categoryEntity.categoryName,
+        createDateString,
+        modifiedDateString
       )
     }
   }
