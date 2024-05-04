@@ -39,7 +39,7 @@ const columns: readonly Column[] = [
     align: 'right',
     format: (value: number) => value.toFixed(2)
   }
-];
+]
 
 
 interface Data {

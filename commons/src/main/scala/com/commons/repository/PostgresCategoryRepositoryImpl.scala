@@ -3,13 +3,12 @@ package com.commons.repository
 import com.commons.models.Category
 import com.commons.utils.{PostgresConnection, Utils}
 import org.bson.types.ObjectId
-import zio.{Task, ZIO, ZLayer}
+import zio.{ZIO, ZLayer}
 import zio.schema.DeriveSchema
 import zio.sql.ConnectionPool
 import zio.sql.postgresql.PostgresJdbcModule
 
 import java.time.LocalDateTime
-import scala.util.{Failure, Success}
 
 trait PostgresCategoryRepository{
   def get()(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Seq[Category]]
@@ -24,12 +23,12 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
   override def get()(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Seq[Category]] = {
     val statement = select(id, categoryName, createDate, modifiedDate).from(categoryTable)
 
-    val executeProgram = for{
+    val executeStatement = for{
       categoryRecords <- execute(statement).map(CategoryEntity tupled _).runCollect
       records = categoryRecords.map(record => toCategory(record))
     } yield records
 
-    executeProgram.provide(
+    executeStatement.provide(
       PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
       ConnectionPool.live,
       SqlDriver.live
@@ -73,16 +72,16 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
     }
 
     def toCategory(categoryEntity: CategoryEntity): Category = {
-      val createDateString = Utils.localDateTimeToDate(categoryEntity.createDate)
-      val modifiedDateString = Utils.localDateTimeToDate(categoryEntity.modifiedDate)
+      val createDate = Utils.localDateTimeToDate(categoryEntity.createDate)
+      val modifiedDate = Utils.localDateTimeToDate(categoryEntity.modifiedDate)
 
       val objectId = new ObjectId(categoryEntity.id)
 
       Category(
         objectId,
         categoryEntity.categoryName,
-        createDateString,
-        modifiedDateString
+        createDate,
+        modifiedDate
       )
     }
   }

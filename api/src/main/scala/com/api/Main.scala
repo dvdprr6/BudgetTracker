@@ -2,8 +2,8 @@ package com.api
 
 import com.api.models.ApiOptions
 import com.api.utils.Constants._
-import com.commons.repository.PostgresCategoryRepositoryImpl
-import com.commons.service.{PostgresCategoryService, PostgresCategoryServiceImpl}
+import com.commons.repository.{PostgresCashFlowRepositoryImpl, PostgresCategoryRepositoryImpl, PostgresItemRepositoryImpl}
+import com.commons.service.{PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresCategoryService, PostgresCategoryServiceImpl, PostgresItemService, PostgresItemServiceImpl}
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli._
@@ -36,7 +36,9 @@ object Main extends ZIOCliDefault{
     /* REFERENCE: https://scalac.io/blog/getting-started-with-zio-http/ */
 
     val app: HttpApp[Any] = Routes(
-      Method.GET / ROOT_URL / "category" -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie
+      Method.GET / ROOT_URL / CATEGORY_URL -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie,
+      Method.GET / ROOT_URL / CASH_FLOW_URL -> handler(getCashFlow(postgresUrl, postgresUsername, postgresPassword)).orDie,
+      Method.GET / ROOT_URL / ITEM_URL -> handler(getItem(postgresUrl, postgresUsername, postgresPassword)).orDie
     ).toHttpApp
 
     val config = Server.Config.default.port(8080)
@@ -47,7 +49,6 @@ object Main extends ZIOCliDefault{
   }
 
   private def getCategories(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Throwable, Response] = {
-
     val categories = for {
       postgresCategoryService <- ZIO.service[PostgresCategoryService]
       categoryDtoRecords <- postgresCategoryService.getCategoryRecords()(postgresUrl, postgresUsername, postgresPassword)
@@ -56,5 +57,21 @@ object Main extends ZIOCliDefault{
     categories.provide(PostgresCategoryServiceImpl.live, PostgresCategoryRepositoryImpl.live)
   }
 
+  private def getCashFlow(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Throwable, Response] = {
+    val cashFlow = for {
+      postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
+      cashFlowDtoRecords <- postgresCashFlowService.getCashFlowRecords()(postgresUrl, postgresUsername, postgresPassword)
+    } yield Response.json(cashFlowDtoRecords.toJson)
 
+    cashFlow.provide(PostgresCashFlowServiceImpl.live, PostgresCashFlowRepositoryImpl.live)
+  }
+
+  private def getItem(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Throwable, Response] = {
+    val item = for {
+      postgresItemService <- ZIO.service[PostgresItemService]
+      itemDtoRecords <- postgresItemService.getItemRecords()(postgresUrl, postgresUsername, postgresPassword)
+    } yield Response.json(itemDtoRecords.toJson)
+
+    item.provide(PostgresItemServiceImpl.live, PostgresItemRepositoryImpl.live)
+  }
 }

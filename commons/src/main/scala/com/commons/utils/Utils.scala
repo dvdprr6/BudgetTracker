@@ -1,6 +1,6 @@
 package com.commons.utils
 
-import com.commons.models.{Category, CategoryDto}
+import com.commons.models.{CashFlow, CashFlowDto, Category, CategoryDto, Item, ItemDto}
 
 import java.text.{DateFormat, SimpleDateFormat}
 import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
@@ -44,4 +44,25 @@ object Utils {
     CategoryDto(id, categoryName, createDate, modifiedDate)
   }
 
+  def cashFlowToCashFlowDto(cashFlow: CashFlow): CashFlowDto = {
+    val id = cashFlow.id.toHexString
+    val amount = cashFlow.amount
+    val delta = cashFlow.delta
+    val createDate = dateToString(cashFlow.createDate)
+    val modifiedDate = dateToString(cashFlow.modifiedDate)
+
+    CashFlowDto(id, amount, delta, createDate, modifiedDate)
+  }
+
+  def itemToItemDto(item: Item): ItemDto = {
+    val id = item.id.toHexString
+    val itemName = item.itemName
+    val amount = item.amount
+    val itemType = item.itemType
+    val categoryId = item.categoryId.toHexString
+    val createDate = dateToString(item.createDate)
+    val modifiedDate = dateToString(item.modifiedDate)
+
+    ItemDto(id, itemName, amount, itemType, categoryId, createDate, modifiedDate)
+  }
 }
