@@ -6,6 +6,7 @@ object Constants {
   val OPTIONS_POSTGRES_PASSWORD = "postgres-password"
 
   val ROOT_URL = "BudgetTracker"
+  val API_URL = "api"
   val CATEGORY_URL = "category"
   val CASH_FLOW_URL = "cashFlow"
   val ITEM_URL = "item"

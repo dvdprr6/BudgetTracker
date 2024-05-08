@@ -36,9 +36,9 @@ object Main extends ZIOCliDefault{
     /* REFERENCE: https://scalac.io/blog/getting-started-with-zio-http/ */
 
     val app: HttpApp[Any] = Routes(
-      Method.GET / ROOT_URL / CATEGORY_URL -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie,
-      Method.GET / ROOT_URL / CASH_FLOW_URL -> handler(getCashFlow(postgresUrl, postgresUsername, postgresPassword)).orDie,
-      Method.GET / ROOT_URL / ITEM_URL -> handler(getItem(postgresUrl, postgresUsername, postgresPassword)).orDie
+      Method.GET / ROOT_URL / API_URL / CATEGORY_URL -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie,
+      Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow(postgresUrl, postgresUsername, postgresPassword)).orDie,
+      Method.GET / ROOT_URL / API_URL / ITEM_URL -> handler(getItem(postgresUrl, postgresUsername, postgresPassword)).orDie
     ).toHttpApp
 
     val config = Server.Config.default.port(8080)
