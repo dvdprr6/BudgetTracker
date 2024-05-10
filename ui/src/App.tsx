@@ -7,6 +7,8 @@ import { CategoriesPage } from '@budgettracker-components-categories'
 import { CashFlowPage } from '@budgettracker-components-cashFlow'
 import CssBaseline from '@mui/material/CssBaseline'
 import { HOME_REDIRECT, DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT } from '@budgettracker-utils'
+import { Provider } from 'react-redux'
+import { store } from '@budgettractker-reducers'
 
 const theme: Theme = createTheme({
   palette: {
@@ -87,7 +89,9 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </ThemeProvider>
   )
 }

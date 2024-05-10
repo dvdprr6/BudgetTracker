@@ -14,6 +14,7 @@ export default defineConfig({
       '@budgettracker-components-dashboard': path.resolve(__dirname, './src/components/dashboard'),
       '@budgettracker-components-categories': path.resolve(__dirname, './src/components/categories'),
       '@budgettracker-components-cashFlow': path.resolve(__dirname, './src/components/cashFlow'),
+      '@budgettractker-reducers': path.resolve(__dirname, './src/reducers'),
       '@budgettracker-utils': path.resolve(__dirname, './src/utils')
     }
   }

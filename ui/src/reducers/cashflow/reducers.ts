@@ -13,6 +13,14 @@ export const cashFlowSlice = createSlice({
   initialState: INITIAL_ALL_STATE,
   reducers: {},
   extraReducers: (builder) => {
-    
+    builder.addCase(getCashFlowRecords.pending, state => {
+      state.isLoading = true
+    }).addCase(getCashFlowRecords.fulfilled, (state, action) => {
+      state.value = action.payload
+      state.isLoading = false
+    }).addCase(getCashFlowRecords.rejected, state => {
+      state.value = []
+      state.isLoading = false
+    })
   }
 })
