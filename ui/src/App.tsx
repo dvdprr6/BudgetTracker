@@ -8,7 +8,7 @@ import { CashFlowPage } from '@budgettracker-components-cashFlow'
 import CssBaseline from '@mui/material/CssBaseline'
 import { HOME_REDIRECT, DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT } from '@budgettracker-utils'
 import { Provider } from 'react-redux'
-import { store } from '@budgettractker-reducers'
+import { store } from '@budgettracker-reducers'
 
 const theme: Theme = createTheme({
   palette: {

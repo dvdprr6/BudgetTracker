@@ -1,6 +1,10 @@
+import { FC, useEffect } from 'react'
 import { Grid } from '@mui/material'
+import { TPropsFromRedux, connector, TAppDispatch } from '@budgettracker-reducers'
+import { useDispatch } from 'react-redux'
 
-const CashFlow = () => {
+const CashFlow: FC<TPropsFromRedux> = (props) => {
+  const { cashFlow: { value: cashFlowDto, isLoading: loading }} = props
 
   return(
     <Grid container spacing={2}>
@@ -9,4 +13,4 @@ const CashFlow = () => {
   )
 }
 
-export default CashFlow
+export default connector(CashFlow)
