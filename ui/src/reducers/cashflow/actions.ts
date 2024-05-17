@@ -6,11 +6,12 @@ export const getCashFlowRecords = createAsyncThunk(GET_CASH_FLOW_RECORDS, async 
   const response = await fetch(CASH_FLOW_API_URL, {
     method: 'GET',
     credentials: 'same-origin',
-    headers: { 'Content-Type':'application/json' }
+    headers: { 'Content-Type':'application/json' , 'Accept': '*/*' }
   })
 
   if(response.status === 200){
-    return await response.json()
+    const body = await response.json()
+    return body
   }else{
     return ''
   }

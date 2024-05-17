@@ -12,4 +12,5 @@ export const CASH_FLOW_SLICE: string = 'CASH_FLOW_SLICE'
 export const GET_CASH_FLOW_RECORDS: string = 'get/cashFlow'
 
 /* API URLS */
-export const CASH_FLOW_API_URL: string = 'api/cashFlow'
+const HTTP_URL: string = 'http://localhost:8080/BudgetTracker/'
+export const CASH_FLOW_API_URL: string = HTTP_URL + 'api/cashFlow'

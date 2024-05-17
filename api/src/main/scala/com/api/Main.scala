@@ -7,6 +7,7 @@ import com.commons.service.{PostgresCashFlowService, PostgresCashFlowServiceImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli._
+import zio.http.Middleware.CorsConfig
 import zio.http._
 import zio.json.EncoderOps
 
@@ -33,13 +34,13 @@ object Main extends ZIOCliDefault{
     val postgresUsername = apiOptions.postgresUsername
     val postgresPassword = apiOptions.postgresPassword
 
-    /* REFERENCE: https://scalac.io/blog/getting-started-with-zio-http/ */
+    val corsConfig = CorsConfig()
 
     val app: HttpApp[Any] = Routes(
       Method.GET / ROOT_URL / API_URL / CATEGORY_URL -> handler(getCategories(postgresUrl, postgresUsername, postgresPassword)).orDie,
       Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow(postgresUrl, postgresUsername, postgresPassword)).orDie,
       Method.GET / ROOT_URL / API_URL / ITEM_URL -> handler(getItem(postgresUrl, postgresUsername, postgresPassword)).orDie
-    ).toHttpApp
+    ).toHttpApp @@ Middleware.cors(corsConfig)
 
     val config = Server.Config.default.port(8080)
 
