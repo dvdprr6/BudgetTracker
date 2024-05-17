@@ -1,6 +1,7 @@
 package com.commons.utils
 
 import com.commons.models.{CashFlow, CashFlowDto, Category, CategoryDto, Item, ItemDto}
+import zio.schema.Patch.ZonedDateTime
 
 import java.text.{DateFormat, SimpleDateFormat}
 import java.time.{Instant, LocalDateTime, ZoneId, ZoneOffset}
@@ -18,9 +19,9 @@ object Utils {
   }
 
   def localDateTimeToDate(localDateTime: LocalDateTime): Date = {
-    val localDateInstant = localDateTime.toInstant(ZoneOffset.UTC)
+    val zonedDateTime = localDateTime.atZone(ZoneId.systemDefault())
 
-    val date = Date.from(localDateInstant)
+    val date = Date.from(zonedDateTime.toInstant())
 
     date
   }
