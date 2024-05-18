@@ -5,3 +5,8 @@ export type TCashFlowDto = {
   createDate: string,
   modifiedDate: string
 }
+
+export type TUseCashFlow = {
+  amounts: number[],
+  months: string[]
+}

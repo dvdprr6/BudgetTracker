@@ -8,6 +8,7 @@ export type TColumn = {
   minWidth?: number,
   align?: 'right',
   format?: (value: number) => string
+  formatString?: (value: string) => string
 }
 
 type TBudgetTrackerTable = {
@@ -57,7 +58,9 @@ const BudgetTrackerTable: FC<TBudgetTrackerTable> = (props) => {
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === 'number'
                             ? column.format(value)
-                            : value}
+                            : column.formatString && typeof value === 'string'
+                              ? column.formatString(value)
+                              : value}
                         </TableCell>
                       )
                     })}
