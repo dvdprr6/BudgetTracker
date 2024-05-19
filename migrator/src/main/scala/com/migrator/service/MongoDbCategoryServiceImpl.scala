@@ -1,6 +1,6 @@
 package com.migrator.service
 
-import com.commons.models.Category
+import com.migrator.models.Category
 import com.migrator.repository.MongoDbCategoryRepository
 import com.migrator.utils.MongoDbConnection
 import zio._

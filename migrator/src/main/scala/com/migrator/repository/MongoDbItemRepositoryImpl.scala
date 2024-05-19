@@ -1,6 +1,6 @@
 package com.migrator.repository
 
-import com.commons.models.Item
+import com.migrator.models.Item
 import com.migrator.utils.Constants.MONGODB_DATABASE
 import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
 import zio.{Task, ZIO, ZLayer}

@@ -1,15 +1,14 @@
 package com.migrator
 
-import com.commons.repository.{PostgresCashFlowRepositoryImpl, PostgresCategoryRepositoryImpl, PostgresItemRepositoryImpl}
-import com.commons.service.{PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresCategoryService, PostgresCategoryServiceImpl, PostgresItemService, PostgresItemServiceImpl}
 import com.migrator.models.MigratorOptions
 import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl}
-import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl}
+import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCategoryService, PostgresItemService, PostgresItemServiceImpl, PostgresCategoryServiceImpl, PostgresCashFlowServiceImpl}
 import com.migrator.utils.Constants._
 import com.migrator.utils.MongoDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
+import com.migrator.repository.{PostgresCashFlowRepositoryImpl, PostgresItemRepositoryImpl, PostgresCategoryRepositoryImpl}
 
 object Main extends ZIOCliDefault {
 

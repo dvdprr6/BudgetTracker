@@ -1,6 +1,6 @@
 package com.migrator.service
 
-import com.commons.models.Item
+import com.migrator.models.Item
 import com.migrator.repository.MongoDbItemRepository
 import com.migrator.utils.MongoDbConnection
 import zio.{Task, ZLayer}

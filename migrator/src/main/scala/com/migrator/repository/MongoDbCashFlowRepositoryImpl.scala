@@ -1,6 +1,6 @@
 package com.migrator.repository
 
-import com.commons.models.CashFlow
+import com.migrator.models.CashFlow
 import com.migrator.utils.Constants.MONGODB_DATABASE
 import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
 import zio._
