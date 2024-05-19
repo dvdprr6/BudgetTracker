@@ -6,6 +6,13 @@ export type TCashFlowDto = {
   modifiedDate: string
 }
 
+export type TCategoryDto = {
+  id: string,
+  categoryName: string,
+  creatDate: string,
+  modifiedDate: string
+}
+
 export type TUseCashFlow = {
   amounts: number[],
   months: string[]
