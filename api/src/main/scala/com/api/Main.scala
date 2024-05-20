@@ -1,7 +1,7 @@
 package com.api
 
-import com.api.models.ApiOptions
-import com.api.repository.{PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresRepositoryImpl}
+import com.api.models.{ApiOptions, PostgresConnectionDto}
+import com.api.repository.{CashFlowService, CashFlowServiceImpl}
 import com.api.utils.Constants._
 import zio._
 import zio.cli.HelpDoc.Span.text
@@ -33,10 +33,12 @@ object Main extends ZIOCliDefault{
     val postgresUsername = apiOptions.postgresUsername
     val postgresPassword = apiOptions.postgresPassword
 
+    implicit val postgresConnectionDto = PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword)
+
     val corsConfig = CorsConfig()
 
     val app: HttpApp[Any] = Routes(
-      Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow(postgresUrl, postgresUsername, postgresPassword)).orDie,
+      Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow).orDie,
     ).toHttpApp @@ Middleware.cors(corsConfig)
 
     val config = Server.Config.default.port(8080)
@@ -46,12 +48,12 @@ object Main extends ZIOCliDefault{
     Server.serve(app).provide(configLayer, Server.live)
   }
 
-  private def getCashFlow(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Throwable, Response] = {
+  private def getCashFlow(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
     val cashFlow = for {
-      postgresCashFlowService <- ZIO.service[PostgresCashFlowService]
-      cashFlowDtoRecords <- postgresCashFlowService.getCashFlowRecords()(postgresUrl, postgresUsername, postgresPassword)
+      postgresCashFlowService <- ZIO.service[CashFlowService]
+      cashFlowDtoRecords <- postgresCashFlowService.getCashFlowRecords()
     } yield Response.json(cashFlowDtoRecords.toJson)
 
-    cashFlow.provide(PostgresCashFlowServiceImpl.live, PostgresRepositoryImpl.live)
+    cashFlow.provide(CashFlowServiceImpl.live)
   }
 }

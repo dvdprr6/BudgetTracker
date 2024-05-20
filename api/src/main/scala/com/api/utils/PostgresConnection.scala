@@ -1,21 +1,15 @@
 package com.api.utils
 
-import zio.ZLayer
-import zio.sql.ConnectionPoolConfig
+import scalikejdbc.{AutoSession, ConnectionPool, DBSession}
+import zio._
 
-import java.util.Properties
+trait PostgresConnection{
+  def getPostgresSession(postgresUrl: String , postgresUsername: String, postgresPassword: String): DBSession = {
+    Class.forName("org.postgresql.Driver")
+    ConnectionPool.singleton(postgresUrl, postgresUsername, postgresPassword)
 
-object PostgresConnection {
-  lazy val live = (postgresUrl: String, postgresUsername: String, postgresPassword: String) =>
-    ZLayer.succeed{
-      val properties = new Properties
-      properties.setProperty("user", postgresUsername)
-      properties.setProperty("password", postgresPassword)
+    val session: DBSession = AutoSession
 
-      ConnectionPoolConfig(
-        url = postgresUrl,
-        properties = properties,
-        autoCommit = true
-      )
-    }
+    session
+  }
 }
