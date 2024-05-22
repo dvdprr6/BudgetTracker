@@ -2,6 +2,7 @@ package com.api
 
 import com.api.models.{ApiOptions, PostgresConnectionDto}
 import com.api.repository.{CashFlowService, CashFlowServiceImpl}
+import com.api.service.{CategoryService, CategoryServiceImpl}
 import com.api.utils.Constants._
 import zio._
 import zio.cli.HelpDoc.Span.text
@@ -39,6 +40,7 @@ object Main extends ZIOCliDefault{
 
     val app: HttpApp[Any] = Routes(
       Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow).orDie,
+      Method.GET / ROOT_URL / API_URL / CATEGORY_GROUP_BY_WITH_TOTALS -> handler(getCategoryWithGroupByTotals).orDie
     ).toHttpApp @@ Middleware.cors(corsConfig)
 
     val config = Server.Config.default.port(8080)
@@ -55,5 +57,14 @@ object Main extends ZIOCliDefault{
     } yield Response.json(cashFlowDtoRecords.toJson)
 
     cashFlow.provide(CashFlowServiceImpl.live)
+  }
+
+  private def getCategoryWithGroupByTotals(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
+    val categoryWithGroupByTotals = for{
+      categoryService <- ZIO.service[CategoryService]
+      categoryWithGroupByTotals <- categoryService.getCategoryGroupByWithTotals()
+    } yield Response.json(categoryWithGroupByTotals.toJson)
+
+    categoryWithGroupByTotals.provide(CategoryServiceImpl.live)
   }
 }

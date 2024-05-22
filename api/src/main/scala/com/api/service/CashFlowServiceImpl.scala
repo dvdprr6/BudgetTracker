@@ -14,7 +14,7 @@ class CashFlowServiceImpl extends CashFlowService {
     val cashFlowRecordsDto = for{
       cashFlowRepository <- ZIO.service[CashFlowRepository]
       cashFlowEntity <- cashFlowRepository.get()
-      cashFlowDto  = cashFlowEntity.map(record => toCashFlowDto(record))
+      cashFlowDto = cashFlowEntity.map(record => toCashFlowDto(record))
     } yield cashFlowDto
 
     cashFlowRecordsDto.provide(CashFlowRepositoryImpl.live)
@@ -37,5 +37,5 @@ object CashFlowServiceImpl{
   private def apply = new CashFlowServiceImpl
 
   lazy val live: ZLayer[Any, Throwable, CashFlowService] =
-    ZLayer.fromFunction(apply _)
+    ZLayer.succeed(apply)
 }

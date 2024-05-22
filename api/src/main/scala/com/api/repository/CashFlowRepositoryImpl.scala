@@ -1,6 +1,6 @@
 package com.api.repository
 
-import com.api.models.{CashFlowDto, CashFlowEntity, PostgresConnectionDto}
+import com.api.models.{CashFlowEntity, PostgresConnectionDto}
 import com.api.utils.PostgresConnection
 import scalikejdbc.scalikejdbcSQLInterpolationImplicitDef
 import zio._
@@ -18,16 +18,17 @@ class CashFlowRepositoryImpl extends CashFlowRepository with PostgresConnection 
 
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
-    val cashFlowEntityRecords: Seq[CashFlowEntity] =
+    val cashFlowEntityRecords: Seq[CashFlowEntity] = {
       sql"""
-      |select
-      |id,
-      |amount,
-      |delta,
-      |create_date,
-      |modified_date
-      |from cash_flow
-      |""".stripMargin.map(rs => CashFlowEntity(rs)).list.apply()
+          |select
+          |id,
+          |amount,
+          |delta,
+          |create_date,
+          |modified_date
+          |from cash_flow
+          |""".stripMargin.map(rs => CashFlowEntity(rs)).list.apply()
+    }
 
     cashFlowEntityRecords
   }
