@@ -1,67 +1,63 @@
+import { FC, useEffect } from 'react'
 import { Grid } from '@mui/material'
+import { TPropsFromRedux, connector, TAppDispatch, getCategoryGroupByWithTotalsRecords } from '@budgettracker-reducers'
+import { useDispatch } from 'react-redux'
 import { BudgetTrackerTable, TColumn, BudgetTrackerPieChart } from '@budgettracker-components-common'
+import { useCategories } from './hooks'
+import moment from 'moment'
 
 const columns: TColumn[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
   {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US')
+    id: 'categoryName',
+    label: 'Category Name',
+    minWidth: 170
   },
   {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    id: 'total',
+    label: 'Total',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US')
+    format: (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(value)
   },
   {
-    id: 'density',
-    label: 'Density',
+    id: 'createDate',
+    label: 'Create Date',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2)
+    formatString: (value: string) => moment(value).format('LLL')
+  },
+  {
+    id: 'modifiedDate',
+    label: 'Modified Date',
+    minWidth: 170,
+    formatString: (value: string) => moment(value).format('LLL')
   }
 ]
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number
-) {
-  const density = population / size
-  return { name, code, population, size, density }
-}
+const Categories: FC<TPropsFromRedux> = (props) => {
+  const { categoryGroupByWithTotals: { value: categoryGroupByWithTotalsDto }} = props
+  const { pieChartData } = useCategories(categoryGroupByWithTotalsDto)
+  const dispatch: TAppDispatch = useDispatch()
 
-const data = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679)
-]
+  useEffect(() => {
+    function getCategoryRecords(): Promise<void>{
+      dispatch(getCategoryGroupByWithTotalsRecords())
 
-const Categories = () => {
+      return Promise.resolve()
+    }
+
+    getCategoryRecords().then()
+
+  }, []);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <BudgetTrackerPieChart data={data} width={800} height={400} />
+        <BudgetTrackerPieChart data={pieChartData} width={800} height={400} />
       </Grid>
       <Grid item xs={12}>
-        <BudgetTrackerTable columns={columns} rows={data} />
+        <BudgetTrackerTable columns={columns} rows={categoryGroupByWithTotalsDto} />
       </Grid>
     </Grid>
   )
 }
 
-export default Categories
+export default connector(Categories)

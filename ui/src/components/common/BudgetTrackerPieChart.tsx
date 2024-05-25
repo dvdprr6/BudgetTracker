@@ -3,7 +3,7 @@ import { PieChart } from '@mui/x-charts'
 import { Box, Card } from '@mui/material'
 
 type TBudgetTrackerPieChart = {
-  data: any[],
+  data: { id: string, value: number, label: string }[],
   width: number,
   height: number
 }
@@ -17,8 +17,9 @@ const BudgetTrackerPieChart: FC<TBudgetTrackerPieChart> = (props) => {
         <PieChart
           series={[
             {
-              data: data.map(((item, index) => ({ id: index, value: item.population, label: item.name }))),
-            },
+              data: data,
+              valueFormatter: v => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'}).format(v.value)
+            }
           ]}
           width={width}
           height={height}

@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { Grid } from '@mui/material'
-import {TPropsFromRedux, connector, TAppDispatch, getCashFlowRecords} from '@budgettracker-reducers'
+import { TPropsFromRedux, connector, TAppDispatch, getCashFlowRecords } from '@budgettracker-reducers'
 import { useDispatch } from 'react-redux'
 import { BudgetTrackerLineChart, TColumn, BudgetTrackerTable } from '@budgettracker-components-common'
 import { useCashFlow } from './hooks'
@@ -34,7 +34,7 @@ const columns: TColumn[] = [
 ]
 
 const CashFlow: FC<TPropsFromRedux> = (props) => {
-  const { cashFlow: { value: cashFlowDto, isLoading: loading }} = props
+  const { cashFlow: { value: cashFlowDto }} = props
   const { amounts, months } = useCashFlow(cashFlowDto)
   const dispatch: TAppDispatch = useDispatch()
 

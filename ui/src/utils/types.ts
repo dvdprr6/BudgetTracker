@@ -13,7 +13,19 @@ export type TCategoryDto = {
   modifiedDate: string
 }
 
+export type TCategoryGroupByWithTotalsDto = {
+  id: string,
+  categoryName: string,
+  total: number,
+  createDate: string,
+  modifiedDate: string
+}
+
 export type TUseCashFlow = {
   amounts: number[],
   months: string[]
+}
+
+export type TUseCategoryGroupByWithTotals = {
+  pieChartData: { id: string, value: number, label: string }[]
 }

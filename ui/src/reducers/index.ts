@@ -2,11 +2,11 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { connect, ConnectedProps } from 'react-redux'
 import { STATE } from './types'
 import { getCashFlowRecords, cashFlowSlice } from './cashflow'
-import { getCategoryRecords, categorySlice } from './category'
+import { getCategoryRecords, getCategoryGroupByWithTotalsRecords, categoryGroupByWithTotalsSlice } from './category'
 
 const rootReducers = combineReducers({
   cashFlow: cashFlowSlice.reducer,
-  category: categorySlice.reducer
+  categoryGroupByWithTotals: categoryGroupByWithTotalsSlice.reducer
 })
 
 export const store = configureStore({ reducer: rootReducers })
@@ -16,7 +16,7 @@ export type TAppDispatch = typeof store.dispatch
 
 const mapStateToProps = (state: TRootState) => ({
   cashFlow: state.cashFlow,
-  category: state.category
+  categoryGroupByWithTotals: state.categoryGroupByWithTotals
 })
 
 export const connector = connect(mapStateToProps)
@@ -26,5 +26,7 @@ export type { STATE }
 
 export {
   getCashFlowRecords,
-  getCategoryRecords
+
+  getCategoryRecords,
+  getCategoryGroupByWithTotalsRecords
 }
