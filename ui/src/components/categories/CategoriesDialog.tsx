@@ -18,6 +18,9 @@ const CategoriesDialog: FC<TCategoriesDialog> = (props) => {
     <Dialog
       open={open}
       onClick={handleOnClose}
+      fullWidth={true}
+      maxWidth={'xl'}
+      scroll={'paper'}
     >
       <DialogTitle sx={{ m: 0, p: 2}}>
         Category
