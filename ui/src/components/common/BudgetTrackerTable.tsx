@@ -13,13 +13,14 @@ export type TColumn = {
 
 type TBudgetTrackerTable = {
   columns: TColumn[],
-  rows: any[]
+  rows: any[],
+  handleOnClick?: (id: string) => void
 }
 
 const BudgetTrackerTable: FC<TBudgetTrackerTable> = (props) => {
-  const { columns, rows } = props
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const { columns, rows , handleOnClick} = props
+  const [page, setPage] = useState<number>(0)
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
   const handleChangePage = useCallback((_event: unknown, newPage: number) => {
     setPage(newPage)
@@ -51,7 +52,14 @@ const BudgetTrackerTable: FC<TBudgetTrackerTable> = (props) => {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.code}
+                    onClick={() => handleOnClick ? handleOnClick(row.id) : undefined}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (

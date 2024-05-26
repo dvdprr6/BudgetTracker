@@ -48,13 +48,21 @@ const Categories: FC<TPropsFromRedux> = (props) => {
 
   }, []);
 
+  const handleOnClick = (id: string) => {
+    console.log(id)
+  }
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <BudgetTrackerPieChart data={pieChartData} width={800} height={400} />
       </Grid>
       <Grid item xs={12}>
-        <BudgetTrackerTable columns={columns} rows={categoryGroupByWithTotalsDto} />
+        <BudgetTrackerTable
+          columns={columns}
+          rows={categoryGroupByWithTotalsDto}
+          handleOnClick={handleOnClick}
+        />
       </Grid>
     </Grid>
   )
