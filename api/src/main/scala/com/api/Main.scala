@@ -40,7 +40,8 @@ object Main extends ZIOCliDefault{
 
     val app: HttpApp[Any] = Routes(
       Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow).orDie,
-      Method.GET / ROOT_URL / API_URL / CATEGORY_GROUP_BY_WITH_TOTALS -> handler(getCategoryWithGroupByTotals).orDie
+      Method.GET / ROOT_URL / API_URL / CATEGORY_URL / CATEGORY_GROUP_BY_WITH_TOTALS -> handler(getCategoryWithGroupByTotals).orDie,
+      Method.GET / ROOT_URL / API_URL / ITEM_URL / ITEM_BY_CATEGORY_URL / string("categoryId") -> handler((categoryId: String, _: Request) => getItemsByCategoryId(categoryId)).orDie
     ).toHttpApp @@ Middleware.cors(corsConfig)
 
     val config = Server.Config.default.port(8080)
@@ -67,4 +68,6 @@ object Main extends ZIOCliDefault{
 
     categoryWithGroupByTotals.provide(CategoryServiceImpl.live)
   }
+
+  private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = ???
 }

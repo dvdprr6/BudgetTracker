@@ -21,6 +21,15 @@ export type TCategoryGroupByWithTotalsDto = {
   modifiedDate: string
 }
 
+export type TItemDto = {
+  id: string,
+  amount: number,
+  itemType: string,
+  categoryId: string,
+  createDate: string,
+  modifiedDate: string
+}
+
 export type TUseCashFlow = {
   amounts: number[],
   months: string[]

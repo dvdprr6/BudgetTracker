@@ -51,8 +51,8 @@ const Categories: FC<TPropsFromRedux> = (props) => {
     setOpenDialog(false)
   }, [openDialog])
 
-  const handleOnClick = (id: string) => {
-    console.log(id)
+  const handleCategoryOnClick = (categoryId: string) => {
+    console.log(categoryId)
     setOpenDialog(true)
   }
 
@@ -65,7 +65,7 @@ const Categories: FC<TPropsFromRedux> = (props) => {
         <BudgetTrackerTable
           columns={columns}
           rows={categoryGroupByWithTotalsDto}
-          handleOnClick={handleOnClick}
+          handleOnClick={handleCategoryOnClick}
         />
       </Grid>
       <Grid item xs={12}>
