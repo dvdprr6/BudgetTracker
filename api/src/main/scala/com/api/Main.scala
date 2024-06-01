@@ -2,7 +2,7 @@ package com.api
 
 import com.api.models.{ApiOptions, PostgresConnectionDto}
 import com.api.repository.{CashFlowService, CashFlowServiceImpl}
-import com.api.service.{CategoryService, CategoryServiceImpl}
+import com.api.service.{CategoryService, CategoryServiceImpl, ItemService, ItemServiceImpl}
 import com.api.utils.Constants._
 import zio._
 import zio.cli.HelpDoc.Span.text
@@ -40,7 +40,7 @@ object Main extends ZIOCliDefault{
 
     val app: HttpApp[Any] = Routes(
       Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow).orDie,
-      Method.GET / ROOT_URL / API_URL / CATEGORY_URL / CATEGORY_GROUP_BY_WITH_TOTALS -> handler(getCategoryWithGroupByTotals).orDie,
+      Method.GET / ROOT_URL / API_URL / CATEGORY_URL / CATEGORY_GROUP_BY_WITH_TOTALS_URL -> handler(getCategoryWithGroupByTotals).orDie,
       Method.GET / ROOT_URL / API_URL / ITEM_URL / ITEM_BY_CATEGORY_URL / string("categoryId") -> handler((categoryId: String, _: Request) => getItemsByCategoryId(categoryId)).orDie
     ).toHttpApp @@ Middleware.cors(corsConfig)
 
@@ -61,13 +61,20 @@ object Main extends ZIOCliDefault{
   }
 
   private def getCategoryWithGroupByTotals(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
-    val categoryWithGroupByTotals = for{
+    val categoryWithGroupByTotalsRecords = for{
       categoryService <- ZIO.service[CategoryService]
       categoryWithGroupByTotals <- categoryService.getCategoryGroupByWithTotals()
     } yield Response.json(categoryWithGroupByTotals.toJson)
 
-    categoryWithGroupByTotals.provide(CategoryServiceImpl.live)
+    categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live)
   }
 
-  private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = ???
+  private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
+    val itemsByCategoryIdRecords = for{
+      itemService <- ZIO.service[ItemService]
+      itemByCategoryIdDto <- itemService.getItemsByCategoryId(categoryId)
+    } yield Response.json(itemByCategoryIdDto.toJson)
+
+    itemsByCategoryIdRecords.provide(ItemServiceImpl.live)
+  }
 }
