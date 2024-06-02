@@ -23,3 +23,6 @@ export const CASH_FLOW_API_URL: string = HTTP_URL + 'api/cashFlow'
 export const CATEGORY_API_URL: string = HTTP_URL + 'api/category'
 export const CATEGORY_GROUP_BY_WITH_TOTALS_API_URL: string = HTTP_URL + 'api/category/categoryGroupByWithTotals'
 export const ITEM_BY_CATEGORY_API_URL: string = HTTP_URL + 'api/item/itemByCategory'
+
+export const EXPENSE = 'Expense'
+export const REVENUE = 'Revenue'

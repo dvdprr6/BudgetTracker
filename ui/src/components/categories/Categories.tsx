@@ -1,6 +1,12 @@
 import { FC, useEffect, useState, useCallback } from 'react'
 import { Grid } from '@mui/material'
-import { TPropsFromRedux, connector, TAppDispatch, getCategoryGroupByWithTotalsRecords } from '@budgettracker-reducers'
+import {
+  TPropsFromRedux,
+  connector,
+  TAppDispatch,
+  getCategoryGroupByWithTotalsRecords,
+  getItemsByCategoryIdRecords
+} from '@budgettracker-reducers'
 import { useDispatch } from 'react-redux'
 import { BudgetTrackerTable, TColumn, BudgetTrackerPieChart } from '@budgettracker-components-common'
 import { useCategories } from './hooks'
@@ -34,7 +40,10 @@ const columns: TColumn[] = [
 ]
 
 const Categories: FC<TPropsFromRedux> = (props) => {
-  const { categoryGroupByWithTotals: { value: categoryGroupByWithTotalsDto }} = props
+  const {
+    categoryGroupByWithTotals: { value: categoryGroupByWithTotalsDto },
+    itemsByCategory: { value: itemByCategoryDto }
+  } = props
   const { pieChartData } = useCategories(categoryGroupByWithTotalsDto)
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const dispatch: TAppDispatch = useDispatch()
@@ -52,8 +61,12 @@ const Categories: FC<TPropsFromRedux> = (props) => {
   }, [openDialog])
 
   const handleCategoryOnClick = (categoryId: string) => {
-    console.log(categoryId)
-    setOpenDialog(true)
+    function getItemRecords(): Promise<void>{
+      dispatch(getItemsByCategoryIdRecords(categoryId))
+      return Promise.resolve()
+    }
+
+    getItemRecords().then(() => setOpenDialog(true))
   }
 
   return (
@@ -70,6 +83,7 @@ const Categories: FC<TPropsFromRedux> = (props) => {
       </Grid>
       <Grid item xs={12}>
         <CategoriesDialog
+          itemDto={itemByCategoryDto}
           open={openDialog}
           handleOnClose={handleCloseDialog}
         />

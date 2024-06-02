@@ -1,11 +1,14 @@
-import BudgetTrackerTable, { TColumn } from './BudgetTrackerTable'
+import BudgetTrackerTable from './BudgetTrackerTable'
 import BudgetTrackerPieChart  from './BudgetTrackerPieChart'
 import BudgetTrackerLineChart from './BudgetTrackerLineChart'
+import BudgetTrackerDenseTable from './BudgetTrackerDenseTable'
+import { TColumn } from './types'
 
 export {
   BudgetTrackerTable,
   BudgetTrackerPieChart,
-  BudgetTrackerLineChart
+  BudgetTrackerLineChart,
+  BudgetTrackerDenseTable
 }
 
 export type { TColumn }

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { GET_ITEM_BY_CATEGORY_RECORDS, ITEM_BY_CATEGORY_API_URL } from '@budgettracker-utils'
 
-export const getItemsByCategoryIdRecords = createAsyncThunk(GET_ITEM_BY_CATEGORY_RECORDS, async (categoryId) => {
+export const getItemsByCategoryIdRecords = createAsyncThunk(GET_ITEM_BY_CATEGORY_RECORDS, async (categoryId: string) => {
   const response = await fetch(ITEM_BY_CATEGORY_API_URL + '/' + categoryId, {
     method: 'GET',
     credentials: 'same-origin',

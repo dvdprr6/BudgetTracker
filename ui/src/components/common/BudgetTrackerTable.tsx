@@ -1,15 +1,7 @@
 import { ChangeEvent, useState, FC, useCallback } from 'react'
 import { Card, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material'
 import { TABLE_MAX_HEIGHT } from '@budgettracker-utils'
-
-export type TColumn = {
-  id: string,
-  label: string,
-  minWidth?: number,
-  align?: 'right',
-  format?: (value: number) => string
-  formatString?: (value: string) => string
-}
+import { TColumn } from './types'
 
 type TBudgetTrackerTable = {
   columns: TColumn[],
