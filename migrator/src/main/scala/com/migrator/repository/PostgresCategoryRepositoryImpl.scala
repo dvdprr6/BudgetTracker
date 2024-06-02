@@ -2,56 +2,35 @@ package com.migrator.repository
 
 import com.migrator.models.Category
 import com.migrator.utils.{PostgresConnection, Utils}
-import zio.{ZIO, ZLayer}
-import zio.schema.DeriveSchema
-import zio.sql.ConnectionPool
-import zio.sql.postgresql.PostgresJdbcModule
+import scalikejdbc._
+import zio.{Task, ZIO, ZLayer}
 
-import java.time.LocalDateTime
+import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCategoryRepository{
-  def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
+  def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Any]
 }
 
-class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresJdbcModule{
+class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresConnection{
 
-  import Entity._
+  override def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Any] = ZIO.succeed {
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
-  override def insert(categories: Seq[Category])(postgresUrl: TableName, postgresUsername: TableName, postgresPassword: TableName): ZIO[Any, Exception, Int] = {
-    val categoryEntity = categories.map(record => toCategoryEntity(record))
-
-    val statement = insertInto(categoryTable)(id, categoryName, createDate, modifiedDate).values(categoryEntity)
-
-    execute(statement).provide(
-      PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
-      ConnectionPool.live,
-      SqlDriver.live
-    )
-  }
-
-  private object Entity{
-    case class CategoryEntity(id: String,
-                              categoryName: String,
-                              createDate: LocalDateTime,
-                              modifiedDate: LocalDateTime)
-
-    implicit val categorySchema = DeriveSchema.gen[CategoryEntity]
-
-    val categoryTable = defineTable[CategoryEntity]("category")
-
-    val (id, categoryName, createDate, modifiedDate) = categoryTable.columns
-
-    def toCategoryEntity(category: Category): CategoryEntity = {
-      val createDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(category.createDate)
-      val modifiedDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(category.modifiedDate)
-
-      CategoryEntity(
-        category.id.toHexString,
-        category.categoryName,
-        createDateLocalDateTime,
-        modifiedDateLocalDateTime
+    val batchParams: Seq[Seq[(String, Any)]] = categories.map { record =>
+      Seq(
+        "id" -> record.id.toHexString,
+        "category_name" -> record.categoryName,
+        "create_date" -> Utils.dateToLocalDateTime(record.createDate),
+        "modified_date" -> Utils.dateToLocalDateTime(record.modifiedDate)
       )
     }
+
+    sql"""
+          insert into category (id, category_name, create_date, modified_date)
+          values ({id}, {category_name}, {create_date}, {modified_date})
+          """
+      .batchByName(batchParams: _*)
+      .apply
   }
 }
 

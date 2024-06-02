@@ -2,55 +2,37 @@ package com.migrator.repository
 
 import com.migrator.models.CashFlow
 import com.migrator.utils.{PostgresConnection, Utils}
-import zio.schema.DeriveSchema
-import zio.{ZIO, ZLayer}
-import zio.sql.ConnectionPool
-import zio.sql.postgresql.PostgresJdbcModule
+import scalikejdbc._
+import zio.{Task, ZIO, ZLayer}
 
-import java.time.LocalDateTime
+import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCashFlowRepository{
-  def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
+  def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
-class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with PostgresJdbcModule{
+class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with PostgresConnection {
 
-  import Entity._
+  override def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
 
-  override def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int] = {
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
-    val cashFlowEntity = cashFlow.map(record => toCashFlowEntity(record))
-
-    val statement = insertInto(cashFlowTable)(id, amount, delta, createDate, modifiedDate).values(cashFlowEntity)
-
-    execute(statement).provide(
-      PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
-      ConnectionPool.live,
-      SqlDriver.live
-    )
-  }
-
-  private object Entity{
-    case class CashFlowEntity(id: String,
-                              amount: Double,
-                              delta: Double,
-                              createDate: LocalDateTime,
-                              modifiedDate: LocalDateTime)
-
-
-    implicit val customerSchema = DeriveSchema.gen[CashFlowEntity]
-
-    val cashFlowTable = defineTable[CashFlowEntity]("cash_flow")
-
-    val (id, amount, delta, createDate, modifiedDate) = cashFlowTable.columns
-
-    def toCashFlowEntity(cashFlow: CashFlow): CashFlowEntity = {
-      val createDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.createDate)
-      val modifiedDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(cashFlow.modifiedDate)
-
-      CashFlowEntity(cashFlow.id.toHexString, cashFlow.amount, cashFlow.delta, createDateLocalDateTime, modifiedDateLocalDateTime)
+    val batchParams: Seq[Seq[(String, Any)]] = cashFlow.map { record =>
+      Seq(
+        "id" -> record.id.toHexString,
+        "amount" -> record.amount,
+        "delta" -> record.delta,
+        "create_date" -> Utils.dateToLocalDateTime(record.createDate),
+        "modified_date" -> Utils.dateToLocalDateTime(record.modifiedDate)
+      )
     }
 
+    sql"""
+          insert into cash_flow (id, amount, delta, create_date, modified_date)
+          values ({id}, {amount}, {delta}, {create_date}, {modified_date})
+          """
+      .batchByName(batchParams: _*)
+      .apply
   }
 }
 

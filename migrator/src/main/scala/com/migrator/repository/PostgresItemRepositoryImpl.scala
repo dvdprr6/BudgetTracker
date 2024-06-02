@@ -2,62 +2,38 @@ package com.migrator.repository
 
 import com.migrator.models.Item
 import com.migrator.utils.{PostgresConnection, Utils}
-import zio.{ZIO, ZLayer}
-import zio.schema.DeriveSchema
-import zio.sql.ConnectionPool
-import zio.sql.postgresql.PostgresJdbcModule
+import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
+import zio.{Task, ZIO, ZLayer}
 
-import java.time.LocalDateTime
+import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresItemRepository{
-  def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): ZIO[Any, Exception, Int]
+  def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
-class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresJdbcModule{
+class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresConnection{
 
-  import Entity._
+  override def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
-  override def insert(items: Seq[Item])(postgresUrl: TableName, postgresUsername: TableName, postgresPassword: TableName): ZIO[Any, Exception, Int] = {
-    val itemEntity = items.map(record => toItemEntity(record))
-
-    val statement = insertInto(itemTable)(id, itemName, amount, itemType, categoryId, createDate, modifiedDate).values(itemEntity)
-
-    execute(statement).provide(
-      PostgresConnection.live(postgresUrl, postgresUsername, postgresPassword),
-      ConnectionPool.live,
-      SqlDriver.live
-    )
-  }
-
-  private object Entity{
-    case class ItemEntity(id: String,
-                          itemName: String,
-                          amount: Double,
-                          itemType: String,
-                          categoryId: String,
-                          createDate: LocalDateTime,
-                          modifiedDate: LocalDateTime)
-
-    implicit val itemSchema = DeriveSchema.gen[ItemEntity]
-
-    val itemTable = defineTable[ItemEntity]("item")
-
-    val (id, itemName, amount, itemType, categoryId, createDate, modifiedDate) = itemTable.columns
-
-    def toItemEntity(item: Item): ItemEntity = {
-      val createDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(item.createDate)
-      val modifiedDateLocalDateTime: LocalDateTime = Utils.dateToLocalDateTime(item.modifiedDate)
-
-      ItemEntity(
-        item.id.toHexString,
-        item.itemName,
-        item.amount,
-        item.itemType,
-        item.categoryId.toHexString,
-        createDateLocalDateTime,
-        modifiedDateLocalDateTime
+    val batchParams: Seq[Seq[(String, Any)]] = items.map{record =>
+      Seq(
+        "id" -> record.id.toHexString,
+        "item_name" -> record.itemName,
+        "amount" -> record.amount,
+        "item_type" -> record.itemType,
+        "category_id" -> record.categoryId.toHexString,
+        "create_date" -> Utils.dateToLocalDateTime(record.createDate),
+        "modified_date" -> Utils.dateToLocalDateTime(record.modifiedDate)
       )
     }
+
+    sql"""
+          insert into item (id, item_name, amount, item_type, category_id, create_date, modified_date)
+          values ({id}, {item_name}, {amount}, {item_type}, {category_id}, {create_date}, {modified_date})
+       """
+      .batchByName(batchParams: _*)
+      .apply()
   }
 }
 
