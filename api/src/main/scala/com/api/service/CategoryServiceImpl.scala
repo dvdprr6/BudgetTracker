@@ -1,25 +1,24 @@
 package com.api.service
 
 import com.api.models.{CategoryGroupByWithTotalsDto, CategoryGroupByWithTotalsEntity, PostgresConnectionDto}
-import com.api.repository.{CategoryRepository, CategoryRepositoryImpl}
+import com.api.repository.CategoryRepository
 import com.api.utils.Utils
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait CategoryService{
   def getCategoryGroupByWithTotals()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CategoryGroupByWithTotalsDto]]
 }
 
-class CategoryServiceImpl extends CategoryService {
+class CategoryServiceImpl(categoryRepository: CategoryRepository) extends CategoryService {
 
   override def getCategoryGroupByWithTotals()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CategoryGroupByWithTotalsDto]] = {
     val categoryGroupByWithTotalsDtoRecords =
       for{
-        categoryRepository <- ZIO.service[CategoryRepository]
         categoryGroupByWithTotalsEntity <- categoryRepository.getWithGroupByTotals()
         categoryGroupByWithTotalsDto = categoryGroupByWithTotalsEntity.map(record => toCategoryGroupByWithTotalsDto(record))
       }  yield categoryGroupByWithTotalsDto
 
-    categoryGroupByWithTotalsDtoRecords.provide(CategoryRepositoryImpl.live)
+    categoryGroupByWithTotalsDtoRecords
   }
 
   private def toCategoryGroupByWithTotalsDto(categoryGroupByWithTotalsEntity: CategoryGroupByWithTotalsEntity): CategoryGroupByWithTotalsDto = {
@@ -34,8 +33,9 @@ class CategoryServiceImpl extends CategoryService {
 }
 
 object CategoryServiceImpl{
-  private def apply = new CategoryServiceImpl
+  private def apply(categoryRepository: CategoryRepository) =
+    new CategoryServiceImpl(categoryRepository)
 
-  lazy val live: ZLayer[Any, Throwable, CategoryService] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[CategoryRepository, Throwable, CategoryService] =
+    ZLayer.fromFunction(apply _)
 }

@@ -1,7 +1,7 @@
 package com.api
 
 import com.api.models.{ApiOptions, PostgresConnectionDto}
-import com.api.repository.{CashFlowService, CashFlowServiceImpl}
+import com.api.repository.{CashFlowRepositoryImpl, CashFlowService, CashFlowServiceImpl, CategoryRepositoryImpl, ItemRepositoryImpl}
 import com.api.service.{CategoryService, CategoryServiceImpl, ItemService, ItemServiceImpl}
 import com.api.utils.Constants._
 import zio._
@@ -57,7 +57,7 @@ object Main extends ZIOCliDefault{
       cashFlowDtoRecords <- postgresCashFlowService.getCashFlowRecords()
     } yield Response.json(cashFlowDtoRecords.toJson)
 
-    cashFlow.provide(CashFlowServiceImpl.live)
+    cashFlow.provide(CashFlowServiceImpl.live, CashFlowRepositoryImpl.live)
   }
 
   private def getCategoryWithGroupByTotals(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
@@ -66,7 +66,7 @@ object Main extends ZIOCliDefault{
       categoryWithGroupByTotals <- categoryService.getCategoryGroupByWithTotals()
     } yield Response.json(categoryWithGroupByTotals.toJson)
 
-    categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live)
+    categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live, CategoryRepositoryImpl.live)
   }
 
   private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
@@ -75,6 +75,6 @@ object Main extends ZIOCliDefault{
       itemByCategoryIdDto <- itemService.getItemsByCategoryId(categoryId)
     } yield Response.json(itemByCategoryIdDto.toJson)
 
-    itemsByCategoryIdRecords.provide(ItemServiceImpl.live)
+    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live)
   }
 }

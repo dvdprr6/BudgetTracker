@@ -2,22 +2,21 @@ package com.api.repository
 
 import com.api.models.{CashFlowDto, CashFlowEntity, PostgresConnectionDto}
 import com.api.utils.Utils
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait CashFlowService{
   def getCashFlowRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowDto]]
 }
 
-class CashFlowServiceImpl extends CashFlowService {
+class CashFlowServiceImpl(cashFlowRepository: CashFlowRepository) extends CashFlowService {
 
   override def getCashFlowRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowDto]] = {
     val cashFlowRecordsDto = for{
-      cashFlowRepository <- ZIO.service[CashFlowRepository]
       cashFlowEntity <- cashFlowRepository.get()
       cashFlowDto = cashFlowEntity.map(record => toCashFlowDto(record))
     } yield cashFlowDto
 
-    cashFlowRecordsDto.provide(CashFlowRepositoryImpl.live)
+    cashFlowRecordsDto
   }
 
   private def toCashFlowDto(cashFlowEntity: CashFlowEntity): CashFlowDto = {
@@ -34,8 +33,9 @@ class CashFlowServiceImpl extends CashFlowService {
 }
 
 object CashFlowServiceImpl{
-  private def apply = new CashFlowServiceImpl
+  private def apply(cashFlowRepository: CashFlowRepository): CashFlowService =
+    new CashFlowServiceImpl(cashFlowRepository)
 
-  lazy val live: ZLayer[Any, Throwable, CashFlowService] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[CashFlowRepository, Throwable, CashFlowService] =
+    ZLayer.fromFunction(apply _)
 }

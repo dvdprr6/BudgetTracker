@@ -1,26 +1,24 @@
 package com.api.service
 
 import com.api.models.{ItemDto, ItemEntity, PostgresConnectionDto}
-import com.api.repository.{ItemRepository, ItemRepositoryImpl}
+import com.api.repository.{ItemRepository}
 import com.api.utils.Utils
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, ZLayer}
 
 trait ItemService{
   def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]]
 }
 
-class ItemServiceImpl extends ItemService {
+class ItemServiceImpl(itemRepository: ItemRepository) extends ItemService {
 
   override def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]] = {
     val itemDtoRecords =
       for{
-        itemRepository <- ZIO.service[ItemRepository]
         itemByCategoryEntity <- itemRepository.getItemsByCategoryId(categoryId)
         itemByCategoryDto = itemByCategoryEntity.map(record => toItemDto(record))
       } yield itemByCategoryDto
 
-    itemDtoRecords.provide(ItemRepositoryImpl.live)
-
+    itemDtoRecords
   }
 
   private def toItemDto(itemEntity: ItemEntity): ItemDto = {
@@ -37,8 +35,9 @@ class ItemServiceImpl extends ItemService {
 }
 
 object ItemServiceImpl{
-  private def apply = new ItemServiceImpl
+  private def apply(itemRepository: ItemRepository) =
+    new ItemServiceImpl(itemRepository)
 
-  lazy val live: ZLayer[Any, Throwable, ItemService] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[ItemRepository, Throwable, ItemService] =
+    ZLayer.fromFunction(apply _)
 }
