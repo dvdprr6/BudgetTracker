@@ -1,19 +1,19 @@
 package com.migrator.service
 
-import com.migrator.models.Item
+import com.migrator.models.{Item, PostgresConnectionDto}
 import zio.{Task, ZLayer}
 import com.migrator.repository.PostgresItemRepository
 
 trait PostgresItemService{
-  def insertItemRecords(item: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def insertItemRecords(item: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
 }
 
 class PostgresItemServiceImpl(postgresItemRepository: PostgresItemRepository) extends PostgresItemService{
 
-  override def insertItemRecords(item: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
+  override def insertItemRecords(item: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] =
     for{
-      _ <- postgresItemRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
-      _ <- postgresItemRepository.insert(item)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
+      _ <- postgresItemRepository.truncate()
+      _ <- postgresItemRepository.insert(item)
     } yield ()
 }
 

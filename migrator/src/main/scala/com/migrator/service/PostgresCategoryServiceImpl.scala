@@ -1,19 +1,19 @@
 package com.migrator.service
 
-import com.migrator.models.Category
+import com.migrator.models.{Category, PostgresConnectionDto}
 import zio.{Task, ZLayer}
 import com.migrator.repository.PostgresCategoryRepository
 
 trait PostgresCategoryService{
-  def insertCategoryRecords(category: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def insertCategoryRecords(category: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
 }
 
 class PostgresCategoryServiceImpl(postgresCategoryRepository: PostgresCategoryRepository) extends PostgresCategoryService{
 
-  override def insertCategoryRecords(category: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
+  override def insertCategoryRecords(category: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] =
     for{
-      _ <- postgresCategoryRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
-      _ <- postgresCategoryRepository.insert(category)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
+      _ <- postgresCategoryRepository.truncate()
+      _ <- postgresCategoryRepository.insert(category)
     } yield ()
 }
 

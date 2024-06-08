@@ -1,20 +1,24 @@
 package com.migrator.repository
 
-import com.migrator.models.Item
+import com.migrator.models.{Item, PostgresConnectionDto}
 import com.migrator.utils.{PostgresConnection, Utils}
-import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
+import scalikejdbc.scalikejdbcSQLInterpolationImplicitDef
 import zio.{Task, ZIO, ZLayer}
 
 import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresItemRepository{
-  def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
-  def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def insert(items: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
+  def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
 }
 
 class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresConnection{
 
-  override def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+  override def insert(items: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
+    val postgresUrl = postgresConnectionDto.postgresUrl
+    val postgresUsername = postgresConnectionDto.postgresUsername
+    val postgresPassword = postgresConnectionDto.postgresPassword
+
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
     val batchParams: Seq[Seq[(String, Any)]] = items.map{record =>
@@ -37,7 +41,11 @@ class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresCon
       .apply()
   }
 
-  override def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+  override def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
+    val postgresUrl = postgresConnectionDto.postgresUrl
+    val postgresUsername = postgresConnectionDto.postgresUsername
+    val postgresPassword = postgresConnectionDto.postgresPassword
+
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
     sql"""truncate table item""".update.apply()

@@ -1,6 +1,6 @@
 package com.migrator.repository
 
-import com.migrator.models.Category
+import com.migrator.models.{Category, PostgresConnectionDto}
 import com.migrator.utils.{PostgresConnection, Utils}
 import scalikejdbc._
 import zio.{Task, ZIO, ZLayer}
@@ -8,13 +8,17 @@ import zio.{Task, ZIO, ZLayer}
 import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCategoryRepository{
-  def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
-  def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def insert(categories: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
+  def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
 }
 
 class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresConnection{
 
-  override def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+  override def insert(categories: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
+    val postgresUrl = postgresConnectionDto.postgresUrl
+    val postgresUsername = postgresConnectionDto.postgresUsername
+    val postgresPassword = postgresConnectionDto.postgresPassword
+
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
     val batchParams: Seq[Seq[(String, Any)]] = categories.map { record =>
@@ -34,7 +38,11 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
       .apply
   }
 
-  override def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+  override def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
+    val postgresUrl = postgresConnectionDto.postgresUrl
+    val postgresUsername = postgresConnectionDto.postgresUsername
+    val postgresPassword = postgresConnectionDto.postgresPassword
+
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
     sql"""truncate table category""".update.apply()

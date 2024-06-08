@@ -1,20 +1,20 @@
 package com.migrator.service
 
-import com.migrator.models.CashFlow
+import com.migrator.models.{CashFlow, PostgresConnectionDto}
 import zio.{Task, ZLayer}
 import com.migrator.repository.PostgresCashFlowRepository
 
 trait PostgresCashFlowService{
-  def insertCashFlowRecords(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def insertCashFlowRecords(cashFlow: Seq[CashFlow])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
 }
 
 class PostgresCashFlowServiceImpl(postgresCashFlowRepository: PostgresCashFlowRepository) extends PostgresCashFlowService {
 
 
-  override def insertCashFlowRecords(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
+  override def insertCashFlowRecords(cashFlow: Seq[CashFlow])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] =
     for{
-      _ <- postgresCashFlowRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
-      _ <- postgresCashFlowRepository.insert(cashFlow)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
+      _ <- postgresCashFlowRepository.truncate()
+      _ <- postgresCashFlowRepository.insert(cashFlow)
     } yield ()
 }
 

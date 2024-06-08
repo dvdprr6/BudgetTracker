@@ -1,14 +1,14 @@
 package com.migrator
 
-import com.migrator.models.MigratorOptions
+import com.migrator.models.{MigratorOptions, PostgresConnectionDto}
 import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl}
-import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCategoryService, PostgresItemService, PostgresItemServiceImpl, PostgresCategoryServiceImpl, PostgresCashFlowServiceImpl}
+import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresCategoryService, PostgresCategoryServiceImpl, PostgresItemService, PostgresItemServiceImpl}
 import com.migrator.utils.Constants._
 import com.migrator.utils.MongoDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
-import com.migrator.repository.{PostgresCashFlowRepositoryImpl, PostgresItemRepositoryImpl, PostgresCategoryRepositoryImpl}
+import com.migrator.repository.{PostgresCashFlowRepositoryImpl, PostgresCategoryRepositoryImpl, PostgresItemRepositoryImpl}
 
 object Main extends ZIOCliDefault {
 
@@ -34,6 +34,8 @@ object Main extends ZIOCliDefault {
     val postgresPassword = migratorOptions.postgresPassword
     val mongoDbUrl = migratorOptions.mongoDbUrl
 
+    implicit val postgresConnectionDto = PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword)
+
     val program = for {
       /* MONGO DB SERVICES */
       mongoDbCashFlowService <- ZIO.service[MongoDbCashFlowService]
@@ -48,9 +50,9 @@ object Main extends ZIOCliDefault {
       mongoDbItemRecords <- mongoDbItemService.getItemRecords(mongoDbUrl)
       mongoDbCategoryRecords <- mongoDbCategoryService.getCategoryRecords(mongoDbUrl)
       /* POSTGRES IMPLEMENTATION */
-      _ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)(postgresUrl, postgresUsername, postgresPassword)
-      _ <- postgresItemService.insertItemRecords(mongoDbItemRecords)(postgresUrl, postgresUsername, postgresPassword)
-      _ <- postgresCategoryService.insertCategoryRecords(mongoDbCategoryRecords)(postgresUrl, postgresUsername, postgresPassword)
+      _ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)
+      _ <- postgresItemService.insertItemRecords(mongoDbItemRecords)
+      _ <- postgresCategoryService.insertCategoryRecords(mongoDbCategoryRecords)
     } yield()
 
     program.provide(
