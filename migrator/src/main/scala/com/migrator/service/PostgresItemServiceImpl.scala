@@ -12,6 +12,7 @@ class PostgresItemServiceImpl(postgresItemRepository: PostgresItemRepository) ex
 
   override def insertItemRecords(item: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
     for{
+      _ <- postgresItemRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
       _ <- postgresItemRepository.insert(item)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
     } yield ()
 }

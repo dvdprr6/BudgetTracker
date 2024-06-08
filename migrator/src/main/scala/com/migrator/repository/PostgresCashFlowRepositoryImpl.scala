@@ -9,6 +9,7 @@ import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCashFlowRepository{
   def insert(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
 class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with PostgresConnection {
@@ -33,6 +34,12 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository with Pos
           """
       .batchByName(batchParams: _*)
       .apply
+  }
+
+  override def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed{
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+
+    sql"""truncate table cash_flow""".update.apply()
   }
 }
 

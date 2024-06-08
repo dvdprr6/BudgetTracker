@@ -9,6 +9,7 @@ import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresItemRepository{
   def insert(items: Seq[Item])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
 class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresConnection{
@@ -34,6 +35,12 @@ class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresCon
        """
       .batchByName(batchParams: _*)
       .apply()
+  }
+
+  override def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+
+    sql"""truncate table item""".update.apply()
   }
 }
 

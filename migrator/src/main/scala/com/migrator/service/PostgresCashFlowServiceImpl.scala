@@ -13,6 +13,7 @@ class PostgresCashFlowServiceImpl(postgresCashFlowRepository: PostgresCashFlowRe
 
   override def insertCashFlowRecords(cashFlow: Seq[CashFlow])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
     for{
+      _ <- postgresCashFlowRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
       _ <- postgresCashFlowRepository.insert(cashFlow)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
     } yield ()
 }

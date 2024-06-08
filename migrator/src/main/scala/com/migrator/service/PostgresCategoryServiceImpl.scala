@@ -12,6 +12,7 @@ class PostgresCategoryServiceImpl(postgresCategoryRepository: PostgresCategoryRe
 
   override def insertCategoryRecords(category: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] =
     for{
+      _ <- postgresCategoryRepository.truncate()(postgresUrl, postgresUsername, postgresPassword)
       _ <- postgresCategoryRepository.insert(category)(postgresUrl: String, postgresUsername: String, postgresPassword: String)
     } yield ()
 }

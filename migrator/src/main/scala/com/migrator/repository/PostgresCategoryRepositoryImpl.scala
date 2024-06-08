@@ -8,12 +8,13 @@ import zio.{Task, ZIO, ZLayer}
 import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCategoryRepository{
-  def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Any]
+  def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
+  def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit]
 }
 
 class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresConnection{
 
-  override def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Any] = ZIO.succeed {
+  override def insert(categories: Seq[Category])(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
     implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
 
     val batchParams: Seq[Seq[(String, Any)]] = categories.map { record =>
@@ -31,6 +32,13 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
           """
       .batchByName(batchParams: _*)
       .apply
+  }
+
+  override def truncate()(postgresUrl: String, postgresUsername: String, postgresPassword: String): Task[Unit] = ZIO.succeed {
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+
+    sql"""truncate table category""".update.apply()
+
   }
 }
 
