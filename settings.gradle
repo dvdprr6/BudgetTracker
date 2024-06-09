@@ -3,5 +3,4 @@ include 'migrator'
 include 'mobile'
 include 'ui'
 include 'api'
-include 'commons'
 
