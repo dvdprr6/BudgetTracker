@@ -5,8 +5,9 @@ import { Home } from '@budgettracker-components-home'
 import { DashboardPage } from '@budgettracker-components-dashboard'
 import { CategoriesPage } from '@budgettracker-components-categories'
 import { CashFlowPage } from '@budgettracker-components-cashFlow'
+import { ItemsPage } from '@budgettracker-components-items'
 import CssBaseline from '@mui/material/CssBaseline'
-import { HOME_REDIRECT, DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT } from '@budgettracker-utils'
+import { HOME_REDIRECT, DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT, ITEM_REDIRECT } from '@budgettracker-utils'
 import { Provider } from 'react-redux'
 import { store } from '@budgettracker-reducers'
 
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
   {
     path: CASH_FLOW_REDIRECT,
     element: <CashFlowPage />
+  },
+  {
+    path: ITEM_REDIRECT,
+    element: <ItemsPage />
   }
 ])
 
