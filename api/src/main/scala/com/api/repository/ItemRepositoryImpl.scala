@@ -6,10 +6,34 @@ import scalikejdbc.scalikejdbcSQLInterpolationImplicitDef
 import zio.{Task, ZIO, ZLayer}
 
 trait ItemRepository{
+  def get()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemEntity]]
   def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemEntity]]
 }
 
 class ItemRepositoryImpl extends ItemRepository with PostgresConnection{
+
+  override def get()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemEntity]] = ZIO.succeed{
+    val postgresUrl = postgresConnectionDto.postgresUrl
+    val postgresUsername = postgresConnectionDto.postgresUsername
+    val postgresPassword = postgresConnectionDto.postgresPassword
+
+    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+
+    val itemRecords: Seq[ItemEntity] =
+      sql"""
+           |select
+           |i.id,
+           |i.item_name,
+           |i.amount,
+           |i.item_type,
+           |i.category_id,
+           |i.create_date,
+           |i.modified_date
+           |from item i
+           |""".stripMargin.map(rs => ItemEntity(rs)).list.apply()
+
+    itemRecords
+  }
 
   override def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemEntity]] = ZIO.succeed {
     val postgresUrl = postgresConnectionDto.postgresUrl
@@ -34,6 +58,7 @@ class ItemRepositoryImpl extends ItemRepository with PostgresConnection{
 
     itemsByCategoryIdRecords
   }
+
 }
 
 object ItemRepositoryImpl{

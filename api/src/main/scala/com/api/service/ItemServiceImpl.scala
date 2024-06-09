@@ -6,10 +6,21 @@ import com.api.utils.Utils
 import zio.{Task, ZLayer}
 
 trait ItemService{
+  def getItemRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]]
   def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]]
 }
 
 class ItemServiceImpl(itemRepository: ItemRepository) extends ItemService {
+
+  override def getItemRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]] = {
+    val itemDtoRecords =
+      for{
+        itemByCategoryEntity <- itemRepository.get
+        itemByCategoryDto = itemByCategoryEntity.map(record => toItemDto(record))
+      } yield itemByCategoryDto
+
+    itemDtoRecords
+  }
 
   override def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[ItemDto]] = {
     val itemDtoRecords =
@@ -32,6 +43,8 @@ class ItemServiceImpl(itemRepository: ItemRepository) extends ItemService {
 
     ItemDto(id, itemName, amount, itemType, categoryId, createDate, modifiedDate)
   }
+
+
 }
 
 object ItemServiceImpl{

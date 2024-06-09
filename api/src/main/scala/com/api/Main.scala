@@ -39,8 +39,12 @@ object Main extends ZIOCliDefault{
     val corsConfig = CorsConfig()
 
     val app: HttpApp[Any] = Routes(
+      /* CASH FLOW URLs */
       Method.GET / ROOT_URL / API_URL / CASH_FLOW_URL -> handler(getCashFlow).orDie,
+      /* CATEGORY URL */
       Method.GET / ROOT_URL / API_URL / CATEGORY_URL / CATEGORY_GROUP_BY_WITH_TOTALS_URL -> handler(getCategoryWithGroupByTotals).orDie,
+      /* ITEM URLs */
+      Method.GET / ROOT_URL / API_URL / ITEM_URL -> handler(getItems()).orDie,
       Method.GET / ROOT_URL / API_URL / ITEM_URL / ITEM_BY_CATEGORY_URL / string("categoryId") -> handler((categoryId: String, _: Request) => getItemsByCategoryId(categoryId)).orDie
     ).toHttpApp @@ Middleware.cors(corsConfig)
 
@@ -67,6 +71,15 @@ object Main extends ZIOCliDefault{
     } yield Response.json(categoryWithGroupByTotals.toJson)
 
     categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live, CategoryRepositoryImpl.live)
+  }
+
+  private def getItems()(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
+    val itemsByCategoryIdRecords = for{
+      itemService <- ZIO.service[ItemService]
+      itemByCategoryIdDto <- itemService.getItemRecords()
+    } yield Response.json(itemByCategoryIdDto.toJson)
+
+    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live)
   }
 
   private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
