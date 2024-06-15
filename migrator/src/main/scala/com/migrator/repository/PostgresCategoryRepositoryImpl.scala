@@ -1,25 +1,21 @@
 package com.migrator.repository
 
 import com.migrator.models.{Category, PostgresConnectionDto}
-import com.migrator.utils.{PostgresConnection, Utils}
+import com.migrator.utils.Utils
 import scalikejdbc._
 import zio.{Task, ZIO, ZLayer}
 
 import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCategoryRepository{
-  def insert(categories: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
-  def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
+  def insert(categories: Seq[Category])(dbSession: DBSession): Task[Unit]
+  def truncate()(dbSession: DBSession): Task[Unit]
 }
 
-class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with PostgresConnection{
+class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository{
 
-  override def insert(categories: Seq[Category])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
-    val postgresUrl = postgresConnectionDto.postgresUrl
-    val postgresUsername = postgresConnectionDto.postgresUsername
-    val postgresPassword = postgresConnectionDto.postgresPassword
-
-    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+  override def insert(categories: Seq[Category])(dbSession: DBSession): Task[Unit] = ZIO.succeed {
+    implicit val session = dbSession
 
     val batchParams: Seq[Seq[(String, Any)]] = categories.map { record =>
       Seq(
@@ -38,15 +34,10 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository with Pos
       .apply
   }
 
-  override def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
-    val postgresUrl = postgresConnectionDto.postgresUrl
-    val postgresUsername = postgresConnectionDto.postgresUsername
-    val postgresPassword = postgresConnectionDto.postgresPassword
-
-    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+  override def truncate()(dbSession: DBSession): Task[Unit] = ZIO.succeed {
+    implicit val session = dbSession
 
     sql"""truncate table category""".update.apply()
-
   }
 }
 

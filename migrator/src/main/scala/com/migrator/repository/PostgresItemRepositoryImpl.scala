@@ -1,25 +1,22 @@
 package com.migrator.repository
 
 import com.migrator.models.{Item, PostgresConnectionDto}
-import com.migrator.utils.{PostgresConnection, Utils}
-import scalikejdbc.scalikejdbcSQLInterpolationImplicitDef
+import com.migrator.utils.Utils
+import scalikejdbc.{DBSession, scalikejdbcSQLInterpolationImplicitDef}
 import zio.{Task, ZIO, ZLayer}
 
 import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresItemRepository{
-  def insert(items: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
-  def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
+  def insert(items: Seq[Item])(dbSession: DBSession): Task[Unit]
+  def truncate()(dbSession: DBSession): Task[Unit]
 }
 
-class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresConnection{
+class PostgresItemRepositoryImpl extends PostgresItemRepository{
 
-  override def insert(items: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
-    val postgresUrl = postgresConnectionDto.postgresUrl
-    val postgresUsername = postgresConnectionDto.postgresUsername
-    val postgresPassword = postgresConnectionDto.postgresPassword
+  override def insert(items: Seq[Item])(dbSession: DBSession): Task[Unit] = ZIO.succeed {
 
-    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+    implicit val session = dbSession
 
     val batchParams: Seq[Seq[(String, Any)]] = items.map{record =>
       Seq(
@@ -41,12 +38,8 @@ class PostgresItemRepositoryImpl extends PostgresItemRepository with PostgresCon
       .apply()
   }
 
-  override def truncate()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] = ZIO.succeed {
-    val postgresUrl = postgresConnectionDto.postgresUrl
-    val postgresUsername = postgresConnectionDto.postgresUsername
-    val postgresPassword = postgresConnectionDto.postgresPassword
-
-    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
+  override def truncate()(dbSession: DBSession): Task[Unit] = ZIO.succeed {
+    implicit val session = dbSession
 
     sql"""truncate table item""".update.apply()
   }

@@ -4,7 +4,7 @@ import com.migrator.models.{MigratorOptions, PostgresConnectionDto}
 import com.migrator.repository.{MongoDbCashFlowRepositoryImpl, MongoDbCategoryRepositoryImpl, MongoDbItemRepositoryImpl}
 import com.migrator.service.{MongoDbCashFlowService, MongoDbCashFlowServiceImpl, MongoDbCategoryService, MongoDbCategoryServiceImpl, MongoDbItemService, MongoDbItemServiceImpl, PostgresCashFlowService, PostgresCashFlowServiceImpl, PostgresCategoryService, PostgresCategoryServiceImpl, PostgresItemService, PostgresItemServiceImpl}
 import com.migrator.utils.Constants._
-import com.migrator.utils.MongoDbConnectionImpl
+import com.migrator.utils.{MongoDbConnectionImpl, PostgresDbConnectionImpl}
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli.{CliApp, Command, Options, ZIOCliDefault}
@@ -66,6 +66,8 @@ object Main extends ZIOCliDefault {
       MongoDbCashFlowServiceImpl.live,
       MongoDbItemServiceImpl.live,
       MongoDbCategoryServiceImpl.live,
+      /* POSTGRES DB CONNECTION LAYERS */
+      PostgresDbConnectionImpl.live,
       /* POSTGRESQL REPOSITORY LAYERS */
       PostgresCashFlowRepositoryImpl.live,
       PostgresItemRepositoryImpl.live,
