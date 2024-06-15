@@ -6,12 +6,12 @@ import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
 import zio._
 
 trait MongoDbCashFlowRepository{
-  def getCashFlowRecords(mongoClient: MongoClient): Task[Seq[CashFlow]]
+  def getCashFlowRecords()(mongoClient: MongoClient): Task[Seq[CashFlow]]
 }
 
 class MongoDbCashFlowRepositoryImpl extends MongoDbCashFlowRepository{
 
-  override def getCashFlowRecords(mongoClient: MongoClient): Task[Seq[CashFlow]] = ZIO.succeed{
+  override def getCashFlowRecords()(mongoClient: MongoClient): Task[Seq[CashFlow]] = ZIO.succeed{
     val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
     val collection: MongoCollection[CashFlow] = database.getCollection("cash_flow", classOf[CashFlow])
 

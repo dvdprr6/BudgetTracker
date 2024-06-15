@@ -14,7 +14,7 @@ class MongoDbItemServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbItemRe
   override def getItemRecords(mongoDbUrl: String): Task[Seq[Item]] = {
     for{
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
-      item <- mongoDbItemRepository.getItemRecords(mongoDbClient)
+      item <- mongoDbItemRepository.getItemRecords()(mongoDbClient)
       _ = mongoDbClient.close()
     } yield item
   }

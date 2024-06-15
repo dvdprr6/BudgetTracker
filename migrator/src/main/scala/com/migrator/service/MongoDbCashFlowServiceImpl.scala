@@ -14,7 +14,7 @@ class MongoDbCashFlowServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbCa
   override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] =
     for {
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
-      cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords(mongoDbClient)
+      cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords()(mongoDbClient)
       _ = mongoDbClient.close()
     } yield cashFlow
 }

@@ -6,12 +6,12 @@ import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
 import zio.{Task, ZIO, ZLayer}
 
 trait MongoDbCategoryRepository{
-  def getCategoryRecords(mongoClient: MongoClient): Task[Seq[Category]]
+  def getCategoryRecords()(mongoClient: MongoClient): Task[Seq[Category]]
 }
 
 class MongoDbCategoryRepositoryImpl extends MongoDbCategoryRepository {
 
-  override def getCategoryRecords(mongoClient: MongoClient): Task[Seq[Category]] = ZIO.succeed{
+  override def getCategoryRecords()(mongoClient: MongoClient): Task[Seq[Category]] = ZIO.succeed{
     val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
     val collection: MongoCollection[Category] = database.getCollection("categories", classOf[Category])
 

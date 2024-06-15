@@ -6,12 +6,12 @@ import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
 import zio.{Task, ZIO, ZLayer}
 
 trait MongoDbItemRepository{
-  def getItemRecords(mongoClient: MongoClient): Task[Seq[Item]]
+  def getItemRecords()(mongoClient: MongoClient): Task[Seq[Item]]
 }
 
 class MongoDbItemRepositoryImpl extends MongoDbItemRepository {
 
-  override def getItemRecords(mongoClient: MongoClient): Task[Seq[Item]] = ZIO.succeed{
+  override def getItemRecords()(mongoClient: MongoClient): Task[Seq[Item]] = ZIO.succeed{
     val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
     val collection: MongoCollection[Item] = database.getCollection("items", classOf[Item])
 

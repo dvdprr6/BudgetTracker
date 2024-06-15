@@ -14,7 +14,7 @@ class MongoDbCategoryServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbCa
   override def getCategoryRecords(mongoDbUrl: String): Task[Seq[Category]] =
     for{
       mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
-      category <- mongoDbCategoryRepository.getCategoryRecords(mongoDbClient)
+      category <- mongoDbCategoryRepository.getCategoryRecords()(mongoDbClient)
       _ = mongoDbClient.close()
     } yield category
 }
