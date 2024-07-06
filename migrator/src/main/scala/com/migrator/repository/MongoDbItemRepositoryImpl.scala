@@ -1,33 +1,25 @@
 package com.migrator.repository
 
 import com.migrator.models.Item
-import com.migrator.utils.Constants.MONGODB_DATABASE
-import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
-import zio.{Task, ZIO, ZLayer}
+import com.migrator.utils.MongoDbConnection
+import zio._
 
 trait MongoDbItemRepository{
-  def getItemRecords()(mongoClient: MongoClient): Task[Seq[Item]]
+  def getItemRecords(mongoUrl: String): Task[Seq[Item]]
 }
 
-class MongoDbItemRepositoryImpl extends MongoDbItemRepository {
+class MongoDbItemRepositoryImpl(mongoDbConnection: MongoDbConnection) extends MongoDbItemRepository {
 
-  override def getItemRecords()(mongoClient: MongoClient): Task[Seq[Item]] = ZIO.succeed{
-    val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
-    val collection: MongoCollection[Item] = database.getCollection("items", classOf[Item])
-
-    var itemDocuments: Seq[Item] = Seq()
-
-    collection.find.forEach{record =>
-      itemDocuments = itemDocuments :+ record
-    }
-
-    itemDocuments
-  }
+  override def getItemRecords(mongoUrl: String): Task[Seq[Item]] =
+    for{
+      itemRecords <- mongoDbConnection.getMongoRecords[Item](mongoUrl, "items", classOf[Item])
+    } yield itemRecords
 }
 
 object MongoDbItemRepositoryImpl{
-  private def apply: MongoDbItemRepository = new MongoDbItemRepositoryImpl
+  private def apply(mongoDbConnection: MongoDbConnection): MongoDbItemRepository =
+    new MongoDbItemRepositoryImpl(mongoDbConnection)
 
-  lazy val live: ZLayer[Any, Nothing, MongoDbItemRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[MongoDbConnection, Nothing, MongoDbItemRepository] =
+    ZLayer.fromFunction(apply _)
 }

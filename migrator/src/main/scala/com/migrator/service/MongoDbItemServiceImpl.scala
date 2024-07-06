@@ -2,30 +2,26 @@ package com.migrator.service
 
 import com.migrator.models.Item
 import com.migrator.repository.MongoDbItemRepository
-import com.migrator.utils.MongoDbConnection
 import zio.{Task, ZLayer}
 
 trait MongoDbItemService{
   def getItemRecords(mongoDbUrl: String): Task[Seq[Item]]
 }
 
-class MongoDbItemServiceImpl(mongoDbConnection: MongoDbConnection, mongoDbItemRepository: MongoDbItemRepository) extends MongoDbItemService {
+class MongoDbItemServiceImpl(mongoDbItemRepository: MongoDbItemRepository) extends MongoDbItemService {
 
   override def getItemRecords(mongoDbUrl: String): Task[Seq[Item]] = {
     for{
-      mongoDbClient <- mongoDbConnection.getMongoClient(mongoDbUrl)
-      item <- mongoDbItemRepository.getItemRecords()(mongoDbClient)
-      _ = mongoDbClient.close()
+      item <- mongoDbItemRepository.getItemRecords(mongoDbUrl)
     } yield item
   }
 }
 
 object MongoDbItemServiceImpl{
-  private type MongoDbItem = MongoDbConnection with MongoDbItemRepository
 
-  private def apply(mongoDbConnection: MongoDbConnection, mongoDbItemRepository: MongoDbItemRepository): MongoDbItemService =
-    new MongoDbItemServiceImpl(mongoDbConnection, mongoDbItemRepository)
+  private def apply(mongoDbItemRepository: MongoDbItemRepository): MongoDbItemService =
+    new MongoDbItemServiceImpl(mongoDbItemRepository)
 
-  lazy val live: ZLayer[MongoDbItem, Throwable, MongoDbItemService] =
+  lazy val live: ZLayer[MongoDbItemRepository, Throwable, MongoDbItemService] =
     ZLayer.fromFunction(apply _)
 }

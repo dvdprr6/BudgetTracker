@@ -1,33 +1,25 @@
 package com.migrator.repository
 
 import com.migrator.models.CashFlow
-import com.migrator.utils.Constants.MONGODB_DATABASE
-import com.mongodb.client.{MongoClient, MongoCollection, MongoDatabase}
+import com.migrator.utils.MongoDbConnection
 import zio._
 
 trait MongoDbCashFlowRepository{
-  def getCashFlowRecords()(mongoClient: MongoClient): Task[Seq[CashFlow]]
+  def getCashFlowRecords(mongoUrl: String): Task[Seq[CashFlow]]
 }
 
-class MongoDbCashFlowRepositoryImpl extends MongoDbCashFlowRepository{
+class MongoDbCashFlowRepositoryImpl(mongoDbConnection: MongoDbConnection) extends MongoDbCashFlowRepository{
 
-  override def getCashFlowRecords()(mongoClient: MongoClient): Task[Seq[CashFlow]] = ZIO.succeed{
-    val database: MongoDatabase = mongoClient.getDatabase(MONGODB_DATABASE)
-    val collection: MongoCollection[CashFlow] = database.getCollection("cash_flow", classOf[CashFlow])
-
-    var cashFlowDocuments: Seq[CashFlow] = Seq()
-
-    collection.find().forEach{record =>
-      cashFlowDocuments = cashFlowDocuments :+ record
-    }
-
-    cashFlowDocuments
-  }
+  override def getCashFlowRecords(mongoUrl: String): Task[Seq[CashFlow]] =
+    for{
+      cashFlowRecords <- mongoDbConnection.getMongoRecords[CashFlow](mongoUrl, "cash_flow", classOf[CashFlow])
+    } yield cashFlowRecords
 }
 
 object MongoDbCashFlowRepositoryImpl{
-  private def apply: MongoDbCashFlowRepository = new MongoDbCashFlowRepositoryImpl
+  private def apply(mongoDbConnection: MongoDbConnection): MongoDbCashFlowRepository =
+    new MongoDbCashFlowRepositoryImpl(mongoDbConnection)
 
-  lazy val live: ZLayer[Any, Nothing, MongoDbCashFlowRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[MongoDbConnection, Nothing, MongoDbCashFlowRepository] =
+    ZLayer.fromFunction(apply _)
 }

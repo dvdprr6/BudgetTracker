@@ -39,8 +39,11 @@ dependencies {
 
   implementation group: 'dev.zio', name: 'zio-cli_2.13', version: '0.5.0'
 
+  implementation group: 'dev.zio', name: 'zio-mock_2.13', version: '1.0.0-RC12'
+
   testImplementation platform('org.junit:junit-bom:5.9.1')
   testImplementation 'org.junit.jupiter:junit-jupiter'
+  testImplementation group: 'dev.zio', name: 'zio-test_2.13', version: '2.0.20'
 }
 
 jar {
