@@ -24,7 +24,7 @@ import zio.test.junit.ZTestJUnitRunner
 class MongoDbCashFlowServiceImplSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment with Scope, Any] =
-    suite("Test Case")(
+    suite("Mongo Database Cash Flow Service Implementation Spec")(
       test("MongoDbCashFlowService should return successfully"){
 
         val expected: Seq[CashFlow] = Seq(
