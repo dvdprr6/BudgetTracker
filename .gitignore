@@ -14,5 +14,4 @@ out/
 !**/src/test/**/out/
 .run
 
-migrator/build/
-migrator/out/
+target/

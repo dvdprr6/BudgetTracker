@@ -11,8 +11,6 @@ repositories {
   mavenCentral()
 }
 
-
-
 sourceSets {
   main {
     scala {
@@ -26,24 +24,27 @@ sourceSets {
   }
 }
 
+test {
+  useJUnitPlatform()
+}
 
 
 dependencies {
   implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
 
   implementation group: 'dev.zio', name: 'zio_2.13', version: '2.0.20'
+  implementation group: 'dev.zio', name: 'zio-cli_2.13', version: '0.5.0'
+  implementation group: 'dev.zio', name: 'zio-mock_2.13', version: '1.0.0-RC12'
 
   implementation group: 'org.scalikejdbc', name: 'scalikejdbc_2.13', version: '4.3.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
   implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: '5.0.1'
 
-  implementation group: 'dev.zio', name: 'zio-cli_2.13', version: '0.5.0'
-
-  implementation group: 'dev.zio', name: 'zio-mock_2.13', version: '1.0.0-RC12'
-
   testImplementation platform('org.junit:junit-bom:5.9.1')
   testImplementation 'org.junit.jupiter:junit-jupiter'
   testImplementation group: 'dev.zio', name: 'zio-test_2.13', version: '2.0.20'
+  testImplementation group: 'dev.zio', name: 'zio-test-junit_2.13', version: '2.0.20'
+
 }
 
 jar {
@@ -64,11 +65,6 @@ task dist(dependsOn: shadowJar, type: Copy){
   into "/home/david/dist/proj/BudgetTracker/migrator-${getDate()}-${incrementBuild()}/lib"
   include '*.jar'
 }
-
-test {
-  useJUnitPlatform()
-}
-
 
 def getDate(){
   return new Date().format('yyyy-MM-dd')
