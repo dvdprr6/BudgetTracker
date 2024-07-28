@@ -5,14 +5,15 @@ import com.migrator.utils.MongoDbConnection
 import zio._
 
 trait MongoDbCashFlowRepository{
-  def getCashFlowRecords(mongoUrl: String): Task[Seq[CashFlow]]
+  def getCashFlowRecords(): Task[Seq[CashFlow]]
 }
 
 class MongoDbCashFlowRepositoryImpl(mongoDbConnection: MongoDbConnection) extends MongoDbCashFlowRepository{
+  private val COLLECTION_CASH_FLOW = "cash_flow"
 
-  override def getCashFlowRecords(mongoUrl: String): Task[Seq[CashFlow]] =
+  override def getCashFlowRecords(): Task[Seq[CashFlow]] =
     for{
-      cashFlowRecords <- mongoDbConnection.getMongoRecords[CashFlow](mongoUrl, "cash_flow", classOf[CashFlow])
+      cashFlowRecords <- mongoDbConnection.getMongoRecords[CashFlow](COLLECTION_CASH_FLOW, classOf[CashFlow])
     } yield cashFlowRecords
 }
 

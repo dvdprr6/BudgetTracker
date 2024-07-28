@@ -5,14 +5,14 @@ import com.migrator.repository.MongoDbItemRepository
 import zio.{Task, ZLayer}
 
 trait MongoDbItemService{
-  def getItemRecords(mongoDbUrl: String): Task[Seq[Item]]
+  def getItemRecords(): Task[Seq[Item]]
 }
 
 class MongoDbItemServiceImpl(mongoDbItemRepository: MongoDbItemRepository) extends MongoDbItemService {
 
-  override def getItemRecords(mongoDbUrl: String): Task[Seq[Item]] = {
+  override def getItemRecords(): Task[Seq[Item]] = {
     for{
-      item <- mongoDbItemRepository.getItemRecords(mongoDbUrl)
+      item <- mongoDbItemRepository.getItemRecords()
     } yield item
   }
 }

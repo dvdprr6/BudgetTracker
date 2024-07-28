@@ -32,9 +32,9 @@ object Main extends ZIOCliDefault {
     val postgresUrl = migratorOptions.postgresUrl
     val postgresUsername = migratorOptions.postgresUsername
     val postgresPassword = migratorOptions.postgresPassword
-    val mongoDbUrl = migratorOptions.mongoDbUrl
 
-    implicit val postgresConnectionDto = PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword)
+    val mongoDbUrl = ZLayer.succeed(migratorOptions.mongoDbUrl)
+    val postgresConnectionDto = ZLayer.succeed(PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword))
 
     val program = for {
       /* MONGO DB SERVICES */
@@ -46,9 +46,9 @@ object Main extends ZIOCliDefault {
       postgresItemService <- ZIO.service[PostgresItemService]
       postgresCategoryService <- ZIO.service[PostgresCategoryService]
       /* MONGO DB IMPLEMENTATION */
-      mongoDbCashFlowRecords <- mongoDbCashFlowService.getCashFlowRecords(mongoDbUrl)
-      mongoDbItemRecords <- mongoDbItemService.getItemRecords(mongoDbUrl)
-      mongoDbCategoryRecords <- mongoDbCategoryService.getCategoryRecords(mongoDbUrl)
+      mongoDbCashFlowRecords <- mongoDbCashFlowService.getCashFlowRecords()
+      mongoDbItemRecords <- mongoDbItemService.getItemRecords()
+      mongoDbCategoryRecords <- mongoDbCategoryService.getCategoryRecords()
       /* POSTGRES IMPLEMENTATION */
       _ <- postgresCashFlowService.insertCashFlowRecords(mongoDbCashFlowRecords)
       _ <- postgresItemService.insertItemRecords(mongoDbItemRecords)
@@ -75,7 +75,10 @@ object Main extends ZIOCliDefault {
       /* POSTGRESQL SERVICE LAYERS */
       PostgresCashFlowServiceImpl.live,
       PostgresItemServiceImpl.live,
-      PostgresCategoryServiceImpl.live
+      PostgresCategoryServiceImpl.live,
+      /* OTHER LAYERS */
+      mongoDbUrl,
+      postgresConnectionDto
     )
   }
 

@@ -1,22 +1,18 @@
 package com.migrator.repository
 
-import com.migrator.models.{Category, PostgresConnectionDto}
-import com.migrator.utils.Utils
-import scalikejdbc._
-import zio.{Task, ZIO, ZLayer}
+import com.migrator.models.Category
+import com.migrator.utils.{PostgresDbConnection, Utils}
+import zio.{Task, ZLayer}
 
-import scala.collection.IndexedSeq.iterableFactory
 
 trait PostgresCategoryRepository{
-  def insert(categories: Seq[Category])(dbSession: DBSession): Task[Unit]
-  def truncate()(dbSession: DBSession): Task[Unit]
+  def insertCategory(categories: Seq[Category]): Task[Unit]
+  def truncateCategory(): Task[Unit]
 }
 
-class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository{
+class PostgresCategoryRepositoryImpl(postgresDbConnection: PostgresDbConnection) extends PostgresCategoryRepository{
 
-  override def insert(categories: Seq[Category])(dbSession: DBSession): Task[Unit] = ZIO.succeed {
-    implicit val session = dbSession
-
+  override def insertCategory(categories: Seq[Category]): Task[Unit] = {
     val batchParams: Seq[Seq[(String, Any)]] = categories.map { record =>
       Seq(
         "id" -> record.id.toHexString,
@@ -26,24 +22,26 @@ class PostgresCategoryRepositoryImpl extends PostgresCategoryRepository{
       )
     }
 
-    sql"""
-          insert into category (id, category_name, create_date, modified_date)
-          values ({id}, {category_name}, {create_date}, {modified_date})
-          """
-      .batchByName(batchParams: _*)
-      .apply
+    val insertQuery =
+      """
+        | INSERT INTO category (id, category_name, create_date, modified_date)
+        | values ({id}, {category_name}, {create_date}, {modified_date})""".stripMargin
+
+    for{
+      _ <- postgresDbConnection.insert(insertQuery, batchParams)
+    } yield ()
   }
 
-  override def truncate()(dbSession: DBSession): Task[Unit] = ZIO.succeed {
-    implicit val session = dbSession
-
-    sql"""truncate table category""".update.apply()
-  }
+  override def truncateCategory(): Task[Unit] =
+    for{
+      _ <- postgresDbConnection.truncate("category")
+    } yield ()
 }
 
 object PostgresCategoryRepositoryImpl{
-  private def apply: PostgresCategoryRepository = new PostgresCategoryRepositoryImpl
+  private def apply(postgresDbConnection: PostgresDbConnection): PostgresCategoryRepository =
+    new PostgresCategoryRepositoryImpl(postgresDbConnection)
 
-  lazy val live: ZLayer[Any, Throwable, PostgresCategoryRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[PostgresDbConnection, Throwable, PostgresCategoryRepository] =
+    ZLayer.fromFunction(apply _)
 }

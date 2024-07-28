@@ -1,23 +1,18 @@
 package com.migrator.repository
 
-import com.migrator.models.{CashFlow, PostgresConnectionDto}
-import com.migrator.utils.Utils
-import scalikejdbc._
-import zio.{Task, ZIO, ZLayer}
-
-import scala.collection.IndexedSeq.iterableFactory
+import com.migrator.models.CashFlow
+import com.migrator.utils.{PostgresDbConnection, Utils}
+import scalikejdbc.{NoExtractor, SQL, scalikejdbcSQLInterpolationImplicitDef}
+import zio._
 
 trait PostgresCashFlowRepository{
-  def insert(cashFlow: Seq[CashFlow])(dbSession: DBSession): Task[Unit]
-  def truncate()(dbSession: DBSession): Task[Unit]
+  def insertCashFlow(cashFlow: Seq[CashFlow]): Task[Unit]
+  def truncateCashFlow(): Task[Unit]
 }
 
-class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository {
+class PostgresCashFlowRepositoryImpl(postgresDbConnection: PostgresDbConnection) extends PostgresCashFlowRepository {
 
-  override def insert(cashFlow: Seq[CashFlow])(dbSession: DBSession): Task[Unit] = ZIO.succeed {
-
-    implicit val session = dbSession
-
+  override def insertCashFlow(cashFlow: Seq[CashFlow]): Task[Unit] = {
     val batchParams: Seq[Seq[(String, Any)]] = cashFlow.map { record =>
       Seq(
         "id" -> record.id.toHexString,
@@ -28,24 +23,27 @@ class PostgresCashFlowRepositoryImpl extends PostgresCashFlowRepository {
       )
     }
 
-    sql"""
-          insert into cash_flow (id, amount, delta, create_date, modified_date)
-          values ({id}, {amount}, {delta}, {create_date}, {modified_date})
-          """
-      .batchByName(batchParams: _*)
-      .apply
+    val insertQuery =
+      """
+        |INSERT INTO cash_flow (id, amount, delta, create_date, modified_date)
+        |VALUES ({id}, {amount}, {delta}, {create_date}, {modified_date})""".stripMargin
+
+    for{
+      _ <- postgresDbConnection.insert(insertQuery, batchParams)
+    } yield()
   }
 
-  override def truncate()(dbSession: DBSession): Task[Unit] = ZIO.succeed{
-    implicit val session = dbSession
-
-    sql"""truncate table cash_flow""".update.apply()
+  override def truncateCashFlow(): Task[Unit] = {
+    for{
+      _ <- postgresDbConnection.truncate("cash_flow")
+    } yield ()
   }
 }
 
 object PostgresCashFlowRepositoryImpl{
-  private def apply: PostgresCashFlowRepository = new PostgresCashFlowRepositoryImpl
+  private def apply(postgresDbConnection: PostgresDbConnection): PostgresCashFlowRepository =
+    new PostgresCashFlowRepositoryImpl(postgresDbConnection)
 
-  lazy val live: ZLayer[Any, Throwable, PostgresCashFlowRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[PostgresDbConnection, Throwable, PostgresCashFlowRepository] =
+    ZLayer.fromFunction(apply _)
 }

@@ -12,8 +12,8 @@ object MongoDbConnectionMock extends Mock[MongoDbConnection] {
       for {
         proxy <- ZIO.service[mock.Proxy]
       } yield new MongoDbConnection {
-        override def getMongoRecords[T: zio.Tag](mongoDbUrl: String, collectionName: String, clazz: Class[T]): ZIO[Any, Exception, Seq[T]] =
-          proxy(GetMongoRecords.of[(String, String, Class[T]), Exception, Seq[T]], mongoDbUrl, collectionName, clazz)
+        override def getMongoRecords[T: zio.Tag](collectionName: String, clazz: Class[T]): ZIO[Any, Exception, Seq[T]] =
+          proxy(GetMongoRecords.of[(String, Class[T]), Exception, Seq[T]], collectionName, clazz)
       }
     }
 }

@@ -5,14 +5,14 @@ import com.migrator.repository.MongoDbCashFlowRepository
 import zio.{Task, ZLayer}
 
 trait MongoDbCashFlowService{
-  def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]]
+  def getCashFlowRecords(): Task[Seq[CashFlow]]
 }
 
 class MongoDbCashFlowServiceImpl(mongoDbCashFlowRepository: MongoDbCashFlowRepository) extends MongoDbCashFlowService {
 
-  override def getCashFlowRecords(mongoDbUrl: String): Task[Seq[CashFlow]] =
+  override def getCashFlowRecords(): Task[Seq[CashFlow]] =
     for {
-      cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords(mongoDbUrl)
+      cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords()
     } yield cashFlow
 }
 

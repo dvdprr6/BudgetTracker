@@ -5,13 +5,15 @@ import com.migrator.utils.MongoDbConnection
 import zio._
 
 trait MongoDbCategoryRepository{
-  def getCategoryRecords(mongoUrl: String): Task[Seq[Category]]
+  def getCategoryRecords(): Task[Seq[Category]]
 }
 
 class MongoDbCategoryRepositoryImpl(mongoDbConnection: MongoDbConnection) extends MongoDbCategoryRepository {
-  override def getCategoryRecords(mongoUrl: String): Task[Seq[Category]] =
+  private val COLLECTION_CATEGORIES = "categories"
+
+  override def getCategoryRecords(): Task[Seq[Category]] =
     for{
-      categoryRecords <- mongoDbConnection.getMongoRecords[Category](mongoUrl, "categories", classOf[Category])
+      categoryRecords <- mongoDbConnection.getMongoRecords[Category](COLLECTION_CATEGORIES, classOf[Category])
     } yield categoryRecords
 }
 

@@ -1,23 +1,17 @@
 package com.migrator.repository
 
-import com.migrator.models.{Item, PostgresConnectionDto}
-import com.migrator.utils.Utils
-import scalikejdbc.{DBSession, scalikejdbcSQLInterpolationImplicitDef}
-import zio.{Task, ZIO, ZLayer}
-
-import scala.collection.IndexedSeq.iterableFactory
+import com.migrator.models.Item
+import com.migrator.utils.{PostgresDbConnection, Utils}
+import zio.{Task, ZLayer}
 
 trait PostgresItemRepository{
-  def insert(items: Seq[Item])(dbSession: DBSession): Task[Unit]
-  def truncate()(dbSession: DBSession): Task[Unit]
+  def insertItem(items: Seq[Item]): Task[Unit]
+  def truncateItem(): Task[Unit]
 }
 
-class PostgresItemRepositoryImpl extends PostgresItemRepository{
+class PostgresItemRepositoryImpl(postgresDbConnection: PostgresDbConnection) extends PostgresItemRepository{
 
-  override def insert(items: Seq[Item])(dbSession: DBSession): Task[Unit] = ZIO.succeed {
-
-    implicit val session = dbSession
-
+  override def insertItem(items: Seq[Item]): Task[Unit] = {
     val batchParams: Seq[Seq[(String, Any)]] = items.map{record =>
       Seq(
         "id" -> record.id.toHexString,
@@ -30,24 +24,27 @@ class PostgresItemRepositoryImpl extends PostgresItemRepository{
       )
     }
 
-    sql"""
-          insert into item (id, item_name, amount, item_type, category_id, create_date, modified_date)
-          values ({id}, {item_name}, {amount}, {item_type}, {category_id}, {create_date}, {modified_date})
-       """
-      .batchByName(batchParams: _*)
-      .apply()
+    val insertQuery =
+      """
+        | INSERT INTO item (id, item_name, amount, item_type, category_id, create_date, modified_date)
+        | VALUES ({id}, {item_name}, {amount}, {item_type}, {category_id}, {create_date}, {modified_date})""".stripMargin
+
+    for {
+      _ <- postgresDbConnection.insert(insertQuery, batchParams)
+    } yield ()
+
   }
 
-  override def truncate()(dbSession: DBSession): Task[Unit] = ZIO.succeed {
-    implicit val session = dbSession
-
-    sql"""truncate table item""".update.apply()
-  }
+  override def truncateItem(): Task[Unit] =
+    for {
+      _ <- postgresDbConnection.truncate("item")
+    } yield ()
 }
 
 object PostgresItemRepositoryImpl{
-  private def apply: PostgresItemRepository = new PostgresItemRepositoryImpl
+  private def apply(postgresDbConnection: PostgresDbConnection): PostgresItemRepository =
+    new PostgresItemRepositoryImpl(postgresDbConnection)
 
-  lazy val live: ZLayer[Any, Throwable, PostgresItemRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[PostgresDbConnection, Throwable, PostgresItemRepository] =
+    ZLayer.fromFunction(apply _)
 }

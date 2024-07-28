@@ -1,30 +1,26 @@
 package com.migrator.service
 
-import com.migrator.models.{Item, PostgresConnectionDto}
+import com.migrator.models.Item
 import zio.{Task, ZLayer}
 import com.migrator.repository.PostgresItemRepository
-import com.migrator.utils.PostgresDbConnection
 
 trait PostgresItemService{
-  def insertItemRecords(item: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit]
+  def insertItemRecords(item: Seq[Item]): Task[Unit]
 }
 
-class PostgresItemServiceImpl(postgresItemRepository: PostgresItemRepository, postgresDbConnection: PostgresDbConnection) extends PostgresItemService{
+class PostgresItemServiceImpl(postgresItemRepository: PostgresItemRepository) extends PostgresItemService{
 
-  override def insertItemRecords(item: Seq[Item])(implicit postgresConnectionDto: PostgresConnectionDto): Task[Unit] =
+  override def insertItemRecords(item: Seq[Item]): Task[Unit] =
     for{
-      postgresSession <- postgresDbConnection.getPostgresSession
-      _ <- postgresItemRepository.truncate()(postgresSession)
-      _ <- postgresItemRepository.insert(item)(postgresSession)
+      _ <- postgresItemRepository.truncateItem()
+      _ <- postgresItemRepository.insertItem(item)
     } yield ()
 }
 
 object PostgresItemServiceImpl{
-  private type ItemServiceItem = PostgresDbConnection with PostgresItemRepository
+  private def apply(postgresItemRepository: PostgresItemRepository): PostgresItemService =
+    new PostgresItemServiceImpl(postgresItemRepository)
 
-  private def apply(postgresItemRepository: PostgresItemRepository, postgresDbConnection: PostgresDbConnection): PostgresItemService =
-    new PostgresItemServiceImpl(postgresItemRepository, postgresDbConnection)
-
-  lazy val live: ZLayer[ItemServiceItem, Throwable, PostgresItemService] =
+  lazy val live: ZLayer[PostgresItemRepository, Throwable, PostgresItemService] =
     ZLayer.fromFunction(apply _)
 }

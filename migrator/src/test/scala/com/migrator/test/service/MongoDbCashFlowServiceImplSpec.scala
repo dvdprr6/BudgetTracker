@@ -3,7 +3,7 @@ package com.migrator.test.service
 import com.migrator.models.CashFlow
 import com.migrator.repository.{MongoDbCashFlowRepository, MongoDbCashFlowRepositoryImpl}
 import com.migrator.test.mocks.MongoDbConnectionMock
-import com.migrator.test.utils.Utils
+import com.migrator.test.utils.TestUtils
 import org.bson.types.ObjectId
 import org.junit.runner.RunWith
 import zio._
@@ -24,23 +24,23 @@ import zio.test.junit.ZTestJUnitRunner
 class MongoDbCashFlowServiceImplSpec extends ZIOSpecDefault {
 
   override def spec: Spec[TestEnvironment with Scope, Any] =
-    suite("Mongo Database Cash Flow Service Implementation Spec")(
+    suite("Mongo Database Cash Flow Repository Implementation Spec")(
       test("MongoDbCashFlowService should return successfully"){
 
         val expected: Seq[CashFlow] = Seq(
-          CashFlow(new ObjectId("6617beabc24b9e297c8098b9"), 45.00, 0.00, Utils.stringToDate("2024-04-11 06:42:51"), Utils.stringToDate("2024-04-11 06:42:51")),
-          CashFlow(new ObjectId("6617beb1c24b9e297c8098ba"), 100.00, 55.00, Utils.stringToDate("2024-04-11 06:42:51"), Utils.stringToDate("2024-04-11 06:42:51")),
-          CashFlow(new ObjectId("6617bebac24b9e297c8098bb"), 75.00, -25.00, Utils.stringToDate("2024-04-11 06:42:51"), Utils.stringToDate("2024-04-11 06:42:51"))
+          CashFlow(new ObjectId("6617beabc24b9e297c8098b9"), 45.00, 0.00, TestUtils.stringToDate("2024-04-11 06:42:51"), TestUtils.stringToDate("2024-04-11 06:42:51")),
+          CashFlow(new ObjectId("6617beb1c24b9e297c8098ba"), 100.00, 55.00, TestUtils.stringToDate("2024-04-11 06:42:51"), TestUtils.stringToDate("2024-04-11 06:42:51")),
+          CashFlow(new ObjectId("6617bebac24b9e297c8098bb"), 75.00, -25.00, TestUtils.stringToDate("2024-04-11 06:42:51"), TestUtils.stringToDate("2024-04-11 06:42:51"))
         )
 
-        val mongoDbConnectionMock = MongoDbConnectionMock.GetMongoRecords.of[(String, String, Class[CashFlow]), Exception, Seq[CashFlow]](
-          equalTo(("mongoUrl", "cash_flow", classOf[CashFlow])),
+        val mongoDbConnectionMock = MongoDbConnectionMock.GetMongoRecords.of[(String, Class[CashFlow]), Exception, Seq[CashFlow]](
+          equalTo(("cash_flow", classOf[CashFlow])),
           value(expected)
         )
 
         val testRun = for{
           mongoDbCashFlowRepository <- ZIO.service[MongoDbCashFlowRepository]
-          cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords("mongoUrl")
+          cashFlow <- mongoDbCashFlowRepository.getCashFlowRecords()
         } yield assert(cashFlow)(equalTo(expected))
 
         testRun.provide(MongoDbCashFlowRepositoryImpl.live, mongoDbConnectionMock)

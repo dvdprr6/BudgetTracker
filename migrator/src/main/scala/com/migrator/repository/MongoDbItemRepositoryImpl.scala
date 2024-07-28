@@ -5,14 +5,15 @@ import com.migrator.utils.MongoDbConnection
 import zio._
 
 trait MongoDbItemRepository{
-  def getItemRecords(mongoUrl: String): Task[Seq[Item]]
+  def getItemRecords(): Task[Seq[Item]]
 }
 
 class MongoDbItemRepositoryImpl(mongoDbConnection: MongoDbConnection) extends MongoDbItemRepository {
+  private val COLLECTION_ITEMS = "items"
 
-  override def getItemRecords(mongoUrl: String): Task[Seq[Item]] =
+  override def getItemRecords(): Task[Seq[Item]] =
     for{
-      itemRecords <- mongoDbConnection.getMongoRecords[Item](mongoUrl, "items", classOf[Item])
+      itemRecords <- mongoDbConnection.getMongoRecords[Item](COLLECTION_ITEMS, classOf[Item])
     } yield itemRecords
 }
 
