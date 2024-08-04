@@ -13,10 +13,10 @@ case class ItemEntity(id: String,
                       modifiedDate: LocalDateTime
                      )
 
-object ItemEntity extends SQLSyntaxSupport[ItemEntity]{
+object ItemEntity extends SQLSyntaxSupport[ItemEntity] with Entity[ItemEntity]{
   override val tableName = "item"
 
-  def apply(rs: WrappedResultSet): ItemEntity =
+  override def apply(rs: WrappedResultSet): ItemEntity =
     ItemEntity(
       rs.string("id"),
       rs.string("item_name"),

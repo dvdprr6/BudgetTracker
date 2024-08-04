@@ -1,42 +1,31 @@
 package com.api.repository
 
-import com.api.models.{CashFlowEntity, PostgresConnectionDto}
-import com.api.utils.PostgresConnection
-import scalikejdbc.scalikejdbcSQLInterpolationImplicitDef
+import com.api.models.CashFlowEntity
+import com.api.utils.PostgresDbConnection
 import zio._
 
 trait CashFlowRepository{
-  def get()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowEntity]]
+  def getCashFlow(): Task[Seq[CashFlowEntity]]
 }
 
-class CashFlowRepositoryImpl extends CashFlowRepository with PostgresConnection {
+class CashFlowRepositoryImpl(postgresDbConnection: PostgresDbConnection) extends CashFlowRepository{
 
-  override def get()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowEntity]] = ZIO.succeed{
-    val postgresUrl = postgresConnectionDto.postgresUrl
-    val postgresUsername = postgresConnectionDto.postgresUsername
-    val postgresPassword = postgresConnectionDto.postgresPassword
+  override def getCashFlow(): Task[Seq[CashFlowEntity]] = {
+    val query =
+      """
+        |SELECT id, amount, delta, create_date, modified_date
+        |FROM cash_flow""".stripMargin
 
-    implicit val session = getPostgresSession(postgresUrl, postgresUsername, postgresPassword)
-
-    val cashFlowEntityRecords: Seq[CashFlowEntity] = {
-      sql"""
-          |select
-          |id,
-          |amount,
-          |delta,
-          |create_date,
-          |modified_date
-          |from cash_flow
-          |""".stripMargin.map(rs => CashFlowEntity(rs)).list.apply()
-    }
-
-    cashFlowEntityRecords
+    for{
+      cashFlowRecords <- postgresDbConnection.get[CashFlowEntity](query, CashFlowEntity)
+    } yield cashFlowRecords
   }
 }
 
 object CashFlowRepositoryImpl{
-  private def apply = new CashFlowRepositoryImpl
+  private def apply(postgresDbConnection: PostgresDbConnection) =
+    new CashFlowRepositoryImpl(postgresDbConnection)
 
-  lazy val live: ZLayer[Any, Throwable, CashFlowRepository] =
-    ZLayer.succeed(apply)
+  lazy val live: ZLayer[PostgresDbConnection, Throwable, CashFlowRepository] =
+    ZLayer.fromFunction(apply _)
 }

@@ -12,10 +12,10 @@ case class CategoryGroupByWithTotalsEntity(
                                             modifiedDate: LocalDateTime
                                            )
 
-object CategoryGroupByWithTotalsEntity extends SQLSyntaxSupport[CategoryGroupByWithTotalsEntity]{
+object CategoryGroupByWithTotalsEntity extends SQLSyntaxSupport[CategoryGroupByWithTotalsEntity] with Entity[CategoryGroupByWithTotalsEntity]{
   override val tableName = "category"
 
-  def apply(rs: WrappedResultSet): CategoryGroupByWithTotalsEntity =
+  override def apply(rs: WrappedResultSet): CategoryGroupByWithTotalsEntity =
     CategoryGroupByWithTotalsEntity(
       rs.string("id"),
       rs.string("category_name"),

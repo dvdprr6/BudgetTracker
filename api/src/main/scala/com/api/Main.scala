@@ -4,6 +4,7 @@ import com.api.models.{ApiOptions, PostgresConnectionDto}
 import com.api.repository.{CashFlowRepositoryImpl, CashFlowService, CashFlowServiceImpl, CategoryRepositoryImpl, ItemRepositoryImpl}
 import com.api.service.{CategoryService, CategoryServiceImpl, ItemService, ItemServiceImpl}
 import com.api.utils.Constants._
+import com.api.utils.PostgresDbConnectionImpl
 import zio._
 import zio.cli.HelpDoc.Span.text
 import zio.cli._
@@ -61,7 +62,9 @@ object Main extends ZIOCliDefault{
       cashFlowDtoRecords <- postgresCashFlowService.getCashFlowRecords()
     } yield Response.json(cashFlowDtoRecords.toJson)
 
-    cashFlow.provide(CashFlowServiceImpl.live, CashFlowRepositoryImpl.live)
+    val postgresConnectionDtoLayer = ZLayer.succeed(postgresConnectionDto)
+
+    cashFlow.provide(CashFlowServiceImpl.live, CashFlowRepositoryImpl.live, PostgresDbConnectionImpl.live, postgresConnectionDtoLayer)
   }
 
   private def getCategoryWithGroupByTotals(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
@@ -70,7 +73,9 @@ object Main extends ZIOCliDefault{
       categoryWithGroupByTotals <- categoryService.getCategoryGroupByWithTotals()
     } yield Response.json(categoryWithGroupByTotals.toJson)
 
-    categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live, CategoryRepositoryImpl.live)
+    val postgresConnectionDtoLayer = ZLayer.succeed(postgresConnectionDto)
+
+    categoryWithGroupByTotalsRecords.provide(CategoryServiceImpl.live, CategoryRepositoryImpl.live, PostgresDbConnectionImpl.live, postgresConnectionDtoLayer)
   }
 
   private def getItems()(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
@@ -79,7 +84,9 @@ object Main extends ZIOCliDefault{
       itemByCategoryIdDto <- itemService.getItemRecords()
     } yield Response.json(itemByCategoryIdDto.toJson)
 
-    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live)
+    val postgresConnectionDtoLayer = ZLayer.succeed(postgresConnectionDto)
+
+    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live, PostgresDbConnectionImpl.live, postgresConnectionDtoLayer)
   }
 
   private def getItemsByCategoryId(categoryId: String)(implicit postgresConnectionDto: PostgresConnectionDto): ZIO[Any, Throwable, Response] = {
@@ -88,6 +95,8 @@ object Main extends ZIOCliDefault{
       itemByCategoryIdDto <- itemService.getItemsByCategoryId(categoryId)
     } yield Response.json(itemByCategoryIdDto.toJson)
 
-    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live)
+    val postgresConnectionDtoLayer = ZLayer.succeed(postgresConnectionDto)
+
+    itemsByCategoryIdRecords.provide(ItemServiceImpl.live, ItemRepositoryImpl.live, PostgresDbConnectionImpl.live, postgresConnectionDtoLayer)
   }
 }

@@ -4,12 +4,18 @@ import scalikejdbc.{SQLSyntaxSupport, WrappedResultSet}
 
 import java.time.LocalDateTime
 
-case class CashFlowEntity(id: String, amount: Double, delta: Double, createDate: LocalDateTime, modifiedDate: LocalDateTime)
+case class CashFlowEntity(
+                           id: String,
+                           amount: Double,
+                           delta: Double,
+                           createDate: LocalDateTime,
+                           modifiedDate: LocalDateTime
+                         )
 
-object CashFlowEntity extends SQLSyntaxSupport[CashFlowEntity]{
+object CashFlowEntity extends SQLSyntaxSupport[CashFlowEntity] with Entity[CashFlowEntity]{
   override val tableName = "cash_flow"
 
-  def apply(rs: WrappedResultSet): CashFlowEntity =
+  override def apply(rs: WrappedResultSet): CashFlowEntity =
     CashFlowEntity(
       rs.string("id"),
       rs.double("amount"),

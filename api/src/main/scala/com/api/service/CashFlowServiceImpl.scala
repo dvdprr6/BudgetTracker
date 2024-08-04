@@ -1,18 +1,18 @@
 package com.api.repository
 
-import com.api.models.{CashFlowDto, CashFlowEntity, PostgresConnectionDto}
+import com.api.models.{CashFlowDto, CashFlowEntity}
 import com.api.utils.Utils
 import zio.{Task, ZLayer}
 
 trait CashFlowService{
-  def getCashFlowRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowDto]]
+  def getCashFlowRecords(): Task[Seq[CashFlowDto]]
 }
 
 class CashFlowServiceImpl(cashFlowRepository: CashFlowRepository) extends CashFlowService {
 
-  override def getCashFlowRecords()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CashFlowDto]] = {
+  override def getCashFlowRecords(): Task[Seq[CashFlowDto]] = {
     val cashFlowRecordsDto = for{
-      cashFlowEntity <- cashFlowRepository.get()
+      cashFlowEntity <- cashFlowRepository.getCashFlow()
       cashFlowDto = cashFlowEntity.map(record => toCashFlowDto(record))
     } yield cashFlowDto
 
@@ -27,7 +27,6 @@ class CashFlowServiceImpl(cashFlowRepository: CashFlowRepository) extends CashFl
     val modifiedDate = Utils.localDateTimeToString(cashFlowEntity.modifiedDate)
 
     CashFlowDto(id, amount, delta, createDate, modifiedDate)
-
   }
 
 }

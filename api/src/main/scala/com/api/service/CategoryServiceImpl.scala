@@ -1,17 +1,17 @@
 package com.api.service
 
-import com.api.models.{CategoryGroupByWithTotalsDto, CategoryGroupByWithTotalsEntity, PostgresConnectionDto}
+import com.api.models.{CategoryGroupByWithTotalsDto, CategoryGroupByWithTotalsEntity}
 import com.api.repository.CategoryRepository
 import com.api.utils.Utils
 import zio.{Task, ZLayer}
 
 trait CategoryService{
-  def getCategoryGroupByWithTotals()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CategoryGroupByWithTotalsDto]]
+  def getCategoryGroupByWithTotals(): Task[Seq[CategoryGroupByWithTotalsDto]]
 }
 
 class CategoryServiceImpl(categoryRepository: CategoryRepository) extends CategoryService {
 
-  override def getCategoryGroupByWithTotals()(implicit postgresConnectionDto: PostgresConnectionDto): Task[Seq[CategoryGroupByWithTotalsDto]] = {
+  override def getCategoryGroupByWithTotals(): Task[Seq[CategoryGroupByWithTotalsDto]] = {
     val categoryGroupByWithTotalsDtoRecords =
       for{
         categoryGroupByWithTotalsEntity <- categoryRepository.getWithGroupByTotals()
