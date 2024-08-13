@@ -15,7 +15,7 @@ class CategoryRepositoryImpl(postgresDbConnection: PostgresDbConnection) extends
       """
         |SELECT c.id, c.category_name, sum(i.amount) as total, c.create_date, c.modified_date
         |FROM category c
-        |INNER JOIN item i
+        |INNER JOIN item i on c.id = i.category_id
         |GROUP BY
         |c.id, c.category_name, c.create_date, c.modified_date
         |""".stripMargin

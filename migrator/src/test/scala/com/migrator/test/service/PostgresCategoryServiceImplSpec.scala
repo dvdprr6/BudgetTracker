@@ -2,7 +2,7 @@ package com.migrator.test.service
 
 import com.migrator.models.Category
 import com.migrator.service.{PostgresCategoryService, PostgresCategoryServiceImpl}
-import com.migrator.repository.{PostgresCategoryRepositoryImpl}
+import com.migrator.repository.PostgresCategoryRepositoryImpl
 import com.migrator.test.mocks.PostgresDbConnectionMock
 import com.migrator.utils.Utils
 import org.bson.types.ObjectId

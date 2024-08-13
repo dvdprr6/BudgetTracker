@@ -35,7 +35,7 @@ object Main extends ZIOCliDefault{
     val postgresUsername = apiOptions.postgresUsername
     val postgresPassword = apiOptions.postgresPassword
 
-    implicit val postgresConnectionDto = PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword)
+    implicit val postgresConnectionDto: PostgresConnectionDto = PostgresConnectionDto(postgresUrl, postgresUsername, postgresPassword)
 
     val corsConfig = CorsConfig()
 

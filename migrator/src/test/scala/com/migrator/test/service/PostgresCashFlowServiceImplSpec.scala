@@ -2,7 +2,6 @@ package com.migrator.test.service
 
 import com.migrator.models.CashFlow
 import com.migrator.service.{PostgresCashFlowService, PostgresCashFlowServiceImpl}
-import com.migrator.test.mocks.PostgresDbConnectionMock
 import com.migrator.utils.Utils
 import org.bson.types.ObjectId
 import org.junit.runner.RunWith
@@ -12,6 +11,7 @@ import zio.test.Assertion.equalTo
 import zio.test.{Spec, TestEnvironment, ZIOSpecDefault, assertTrue}
 import zio.test.junit.ZTestJUnitRunner
 import com.migrator.repository.PostgresCashFlowRepositoryImpl
+import com.migrator.test.mocks.PostgresDbConnectionMock
 
 
 import java.util.Date
