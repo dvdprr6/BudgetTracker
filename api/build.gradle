@@ -1,7 +1,7 @@
 plugins {
   id 'java'
   id 'scala'
-  id 'com.github.johnrengelman.shadow' version '8.1.1'
+  id 'com.github.johnrengelman.shadow'
 }
 
 group = 'com.api'
@@ -24,15 +24,14 @@ sourceSets {
 }
 
 dependencies {
-  implementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.5'
+  implementation group: 'org.scala-lang', name: 'scala-library', version: scalaLibraryVersion
 
-  implementation group: 'dev.zio', name: 'zio_2.13', version: '2.0.20'\
-
-  implementation group: 'org.scalikejdbc', name: 'scalikejdbc_2.13', version: '4.3.0'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
-
-  implementation group: 'dev.zio', name: 'zio-cli_2.13', version: '0.5.0'
+  implementation group: 'dev.zio', name: 'zio_2.13', version: zioVersion
+  implementation group: 'dev.zio', name: 'zio-cli_2.13', version: zioCliVersion
   implementation group: 'dev.zio', name: 'zio-http_2.13', version: '3.0.0-RC6'
+
+  implementation group: 'org.scalikejdbc', name: 'scalikejdbc_2.13', version: scalaLikeJdbcVersion
+  implementation group: 'org.postgresql', name: 'postgresql', version: postgresVersion
 
   testImplementation platform('org.junit:junit-bom:5.10.0')
   testImplementation 'org.junit.jupiter:junit-jupiter'
