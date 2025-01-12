@@ -52,7 +52,6 @@ const CategoriesDialog: FC<TCategoriesDialog> = (props) => {
   return(
     <Dialog
       open={open}
-      onClick={handleOnClose}
       fullWidth={true}
       maxWidth={'xl'}
       scroll={'paper'}

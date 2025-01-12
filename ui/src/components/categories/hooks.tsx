@@ -18,7 +18,7 @@ export function useCategories(categoriesGroupByWithTotalsDto: TCategoryGroupByWi
 export function useCategoriesDialog(itemDto: TItemDto[]): TUseCategories{
   const itemDtoCopy = [...itemDto]
 
-  const pieChartData = itemDtoCopy.map(record => ({ id: record.id, value: record.amount, label: record.itemType }))
+  const pieChartData = itemDtoCopy.map(record => ({ id: record.id, value: record.amount, label: record.itemName }))
   
   return { pieChartData }
 }
