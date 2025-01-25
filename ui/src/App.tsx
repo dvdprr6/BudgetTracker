@@ -7,6 +7,8 @@ import { CategoriesPage } from '@budgettracker-components-categories'
 import { CashFlowPage } from '@budgettracker-components-cashFlow'
 import { ItemsPage } from '@budgettracker-components-items'
 import CssBaseline from '@mui/material/CssBaseline'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { HOME_REDIRECT, DASHBOARD_REDIRECT, CATEGORIES_REDIRECT, CASH_FLOW_REDIRECT, ITEM_REDIRECT } from '@budgettracker-utils'
 import { Provider } from 'react-redux'
 import { store } from '@budgettracker-reducers'
@@ -18,7 +20,7 @@ const theme: Theme = createTheme({
       main: '#1d5bb9'
     },
     secondary: {
-      main: '#1d5bb9'
+      main: '#e1deb0'
     },
     background: {
       default: '#303030',
@@ -94,9 +96,11 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <Provider store={store}>
+          <RouterProvider router={router} />
+        </Provider>
+      </LocalizationProvider>
     </ThemeProvider>
   )
 }

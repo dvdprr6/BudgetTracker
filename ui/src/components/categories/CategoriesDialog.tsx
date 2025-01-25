@@ -5,10 +5,8 @@ import DialogContent from '@mui/material/DialogContent'
 import Grid from '@mui/material/Grid'
 import { TItemDto } from '@budgettracker-utils'
 import { TColumn } from '@budgettracker-components-common'
-import { BudgetTrackerDenseTable, BudgetTrackerPieChart } from '@budgettracker-components-common'
+import { BudgetTrackerDenseTable, BudgetTrackerPieChart, CloseDialogIcon } from '@budgettracker-components-common'
 import { useCategoriesDialog } from './hooks'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
 
 type TCategoriesDialog = {
   open: boolean
@@ -59,17 +57,7 @@ const CategoriesDialog: FC<TCategoriesDialog> = (props) => {
       <DialogTitle sx={{ m: 0, p: 2 }}>
         Category
       </DialogTitle>
-      <IconButton
-        onClick={handleOnClose}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+      <CloseDialogIcon handleOnClose={handleOnClose} />
       <DialogContent dividers>
         <Grid container spacing={2}>
           <Grid item xs={12}>

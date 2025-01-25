@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react'
+import React, { FC, ReactNode, useState, useCallback } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from '@mui/material'
@@ -10,6 +10,8 @@ import {
   ITEM_REDIRECT
 } from '@budgettracker-utils'
 import { useNavigate } from 'react-router-dom'
+import DateRangeIcon from '@mui/icons-material/DateRange'
+import DateRangeDialog from './DateRangeDialog.tsx'
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -24,6 +26,7 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
   const { component: Component } = props
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const navigate = useNavigate()
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
@@ -37,6 +40,10 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
   }
+
+  const handleOpenDialog = useCallback(() => { setOpenDialog(true) }, [openDialog])
+
+  const handleCloseDialog = useCallback(() => { setOpenDialog(false) }, [openDialog])
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -131,6 +138,13 @@ const Navigation: FC<{ component: ReactNode }> = (props) => {
                 Cash Flow
               </Button>
             </Box>
+            <IconButton onClick={handleOpenDialog}>
+              <DateRangeIcon />
+            </IconButton>
+            <DateRangeDialog
+              open={openDialog}
+              handleOnClose={handleCloseDialog}
+            />
           </Toolbar>
         </Container>
       </AppBar>
