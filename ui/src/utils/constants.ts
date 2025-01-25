@@ -12,6 +12,7 @@ export const CATEGORY_SLICE: string = 'CATEGORY_SLICE'
 export const CATEGORY_GROUP_BY_WITH_TOTALS_SLICE: string = 'CATEGORY_GROUP_BY_WITH_TOTALS_SLICE'
 export const ITEM_SLICE: string = 'ITEM_SLICE'
 export const ITEM_BY_CATEGORY_SLICE: string = 'ITEM_BY_CATEGORY_SLICE'
+export const GLOBAL_DATE_RANGE_SLICE: string = 'GLOBAL_DATE_RANGE_SLICE'
 
 /* THUNK CONSTANTS */
 export const GET_CASH_FLOW_RECORDS: string = 'get/cashFlow'
@@ -19,6 +20,8 @@ export const GET_CATEGORY_RECORDS: string = 'get/category'
 export const GET_CATEGORY_GROUP_BY_WITH_TOTALS_RECORDS: string = 'get/categoryGroupByWithTotalsRecords'
 export const GET_ITEM_RECORDS: string = 'get/item'
 export const GET_ITEM_BY_CATEGORY_RECORDS: string = 'get/itemByCategoryRecords'
+export const SET_GLOBAL_DATE_RANGE: string = 'set/globalDateRange'
+export const RESET_GLOBAL_DATE_RANGE: string = 'reset/globalDateRange'
 
 /* API URLS */
 const HTTP_URL: string = 'http://localhost:8080/BudgetTracker/'

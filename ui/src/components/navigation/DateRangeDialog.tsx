@@ -5,15 +5,14 @@ import { DateRange } from '@mui/x-date-pickers-pro'
 import moment from 'moment/moment'
 import { Controller, useForm } from 'react-hook-form'
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker'
+import { TDateRangePicker } from '@budgettracker-utils'
 
 type TDateRangeDialog = {
   open: boolean
   handleOnClose: () => void
 }
 
-type TDateRangePickerForm = {
-  dateRange: DateRange<moment.Moment>
-}
+type TDateRangePickerForm = TDateRangePicker
 
 const DateRangeDialog: FC<TDateRangeDialog> = (props) => {
   const { open, handleOnClose } = props
@@ -48,7 +47,6 @@ const DateRangeDialog: FC<TDateRangeDialog> = (props) => {
       <DialogContent dividers>
         <Controller
           name={'dateRange'}
-          //defaultValue={initialValues}
           control={control}
           render={({ field: { value, onChange }}) => (
             <Stack spacing={2} direction={'row'}>

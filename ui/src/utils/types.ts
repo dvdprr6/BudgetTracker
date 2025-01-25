@@ -1,3 +1,6 @@
+import moment from 'moment/moment'
+import { DateRange } from '@mui/x-date-pickers-pro'
+
 export type TCashFlowDto = {
   id: string
   amount: number
@@ -34,4 +37,8 @@ export type TItemDto = {
 export type TUseCashFlow = {
   amounts: number[]
   months: string[]
+}
+
+export type TDateRangePicker = {
+  dateRange: DateRange<moment.Moment>
 }

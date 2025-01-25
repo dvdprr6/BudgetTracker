@@ -3,13 +3,15 @@ import { connect, ConnectedProps } from 'react-redux'
 import { STATE } from './types'
 import { getCashFlowRecords, cashFlowSlice } from './cashflow'
 import { getCategoryRecords, getCategoryGroupByWithTotalsRecords, categoryGroupByWithTotalsSlice } from './category'
-import { getItemRecords, getItemsByCategoryIdRecords, itemsByCategorySlice, itemsSlice} from './item'
+import { getItemRecords, getItemsByCategoryIdRecords, itemsByCategorySlice, itemsSlice } from './item'
+import { setGlobalDateRange, resetGlobalDateRange,  globalDateRangeSlice } from './globalDateRange'
 
 const rootReducers = combineReducers({
   cashFlow: cashFlowSlice.reducer,
   categoryGroupByWithTotals: categoryGroupByWithTotalsSlice.reducer,
   items: itemsSlice.reducer,
-  itemsByCategory: itemsByCategorySlice.reducer
+  itemsByCategory: itemsByCategorySlice.reducer,
+  globalDateRange: globalDateRangeSlice.reducer
 })
 
 export const store = configureStore({ reducer: rootReducers })
@@ -21,7 +23,8 @@ const mapStateToProps = (state: TRootState) => ({
   cashFlow: state.cashFlow,
   categoryGroupByWithTotals: state.categoryGroupByWithTotals,
   items: state.items,
-  itemsByCategory: state.itemsByCategory
+  itemsByCategory: state.itemsByCategory,
+  globalDateRange: state.globalDateRange
 })
 
 export const connector = connect(mapStateToProps)
@@ -36,5 +39,8 @@ export {
   getCategoryGroupByWithTotalsRecords,
 
   getItemRecords,
-  getItemsByCategoryIdRecords
+  getItemsByCategoryIdRecords,
+
+  setGlobalDateRange,
+  resetGlobalDateRange
 }

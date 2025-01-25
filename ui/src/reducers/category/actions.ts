@@ -21,7 +21,7 @@ export const getCategoryRecords = createAsyncThunk(GET_CATEGORY_RECORDS, async (
   }
 })
 
-export const getCategoryGroupByWithTotalsRecords = createAsyncThunk(GET_CATEGORY_GROUP_BY_WITH_TOTALS_RECORDS, async() => {
+export const getCategoryGroupByWithTotalsRecords = createAsyncThunk(GET_CATEGORY_GROUP_BY_WITH_TOTALS_RECORDS, async () => {
   const response = await fetch(CATEGORY_GROUP_BY_WITH_TOTALS_API_URL, {
     method: 'GET',
     credentials: 'same-origin',
