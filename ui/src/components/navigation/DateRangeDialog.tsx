@@ -1,11 +1,17 @@
-import { FC, useCallback, useState, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import {Dialog, DialogTitle, DialogContent, Stack, Button} from '@mui/material'
 import { CloseDialogIcon } from '@budgettracker-components-common'
-import { DateRange } from '@mui/x-date-pickers-pro'
-import moment from 'moment/moment'
 import { Controller, useForm } from 'react-hook-form'
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker'
 import { TDateRangePicker } from '@budgettracker-utils'
+import {
+  TPropsFromRedux,
+  connector,
+  TAppDispatch,
+  setGlobalDateRange,
+  resetGlobalDateRange
+} from '@budgettracker-reducers'
+import { useDispatch } from 'react-redux'
 
 type TDateRangeDialog = {
   open: boolean
@@ -14,23 +20,29 @@ type TDateRangeDialog = {
 
 type TDateRangePickerForm = TDateRangePicker
 
-const DateRangeDialog: FC<TDateRangeDialog> = (props) => {
-  const { open, handleOnClose } = props
-  const [currentDateRange, setCurrentDateRange] = useState<DateRange<moment.Moment>>([moment().startOf('month'), moment().endOf('month')])
+const DateRangeDialog: FC<TDateRangeDialog & TPropsFromRedux> = (props) => {
+  const { open, handleOnClose, globalDateRange: { value: gDateRange } } = props
   const { control, handleSubmit, setValue } = useForm<TDateRangePickerForm>()
+  const dispatch: TAppDispatch = useDispatch()
 
   useEffect(() => {
-    setValue('dateRange', currentDateRange)
-  }, [currentDateRange])
+    setValue('dateRange', gDateRange.dateRange)
+  }, [gDateRange.dateRange])
 
-  const handleDateRangePickerReset = useCallback(() => {
-    setCurrentDateRange([moment().startOf('month'), moment().endOf('month')])
-  }, [currentDateRange])
+  const handleDateRangePickerReset = () => {
+    function resetDateRange(): Promise<void>{
+      dispatch(resetGlobalDateRange())
+      return Promise.resolve()
+    }
+    resetDateRange().then()
+  }
 
   const handleDateRangeSubmit = (form: TDateRangePickerForm) => {
-    setCurrentDateRange([form.dateRange[0], form.dateRange[1]])
-    console.log(form.dateRange[0])
-    console.log(form.dateRange[1])
+    function setDateRange(): Promise<void>{
+      dispatch(setGlobalDateRange(form))
+      return Promise.resolve()
+    }
+    setDateRange().then(() => handleOnClose())
   }
 
   return (
@@ -66,6 +78,4 @@ const DateRangeDialog: FC<TDateRangeDialog> = (props) => {
   )
 }
 
-
-
-export default DateRangeDialog
+export default connector(DateRangeDialog)
